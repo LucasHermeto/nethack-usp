@@ -1,4 +1,4 @@
-package br.com.poo.nethack.game;
+package br.com.poo.nethack.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -7,8 +7,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -22,12 +20,7 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.github.czyzby.noise4j.map.Grid;
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator;
 
-public class Game extends com.badlogic.gdx.Game implements InputProcessor{
-	// Fonte
-	private GlyphLayout glyphLayout;
-	private BitmapFont font;
-	private String text;
-	
+public class Game extends AbstractScreen implements InputProcessor{
 	// Mapa
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
@@ -43,15 +36,21 @@ public class Game extends com.badlogic.gdx.Game implements InputProcessor{
     private Sprite player;
     private int playerX = 0;
     private int playerY = 0;
+    private String name;
+    private String classe;
+    private String race;
 	
+    public Game(String name, String classe, String race) {
+    	this.name = name;
+    	this.classe = classe;
+    	this.race = race;
+    }
+    
     @Override
-    public void create() {    	
+	public void buildStage() { 	
+    	System.out.println("Name: " + this.name + "\nClasse: "
+    			+ this.classe + "\nRace: " + this.race);
     	texture = new Texture(Gdx.files.internal("sprite.png"));
-    	
-    	// Fonte
-		font = new BitmapFont(Gdx.files.internal("font.fnt"));
-		glyphLayout = new GlyphLayout();
-		text = "Hello World!";
     	
         // Mapa
         float w = Gdx.graphics.getWidth();
@@ -66,7 +65,7 @@ public class Game extends com.badlogic.gdx.Game implements InputProcessor{
         final DungeonGenerator dungeonGenerator = new DungeonGenerator();
         dungeonGenerator.setRoomGenerationAttempts(200);
         dungeonGenerator.setMaxRoomSize(13);
-        dungeonGenerator.setMaxRoomsAmount(10);
+        dungeonGenerator.setMaxRoomsAmount(30);
         dungeonGenerator.setTolerance(10); // Max difference between width and height.
         dungeonGenerator.setMinRoomSize(9);
         dungeonGenerator.setRandomConnectorChance(0f); // One way to solve the maze.
@@ -146,7 +145,7 @@ public class Game extends com.badlogic.gdx.Game implements InputProcessor{
     }
     
     @Override
-    public void render() {
+    public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -157,16 +156,12 @@ public class Game extends com.badlogic.gdx.Game implements InputProcessor{
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         player.draw(sb);
-        
-		glyphLayout.setText(font, text);
-		font.draw(sb, text,
-				playerX - 32,
-				playerY - 32);
         sb.end();
     }
     
     @Override
     public void dispose() {
+    	super.dispose();
     	tiledMap.dispose();
     	sb.dispose();
     }
