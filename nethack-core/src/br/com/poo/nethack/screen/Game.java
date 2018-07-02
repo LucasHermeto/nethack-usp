@@ -1,5 +1,7 @@
 package br.com.poo.nethack.screen;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -20,11 +22,15 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.github.czyzby.noise4j.map.Grid;
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator;
 
+import br.com.poo.nethack.util.ScreenEnum;
+import br.com.poo.nethack.util.ScreenManager;
+
 public class Game extends AbstractScreen implements InputProcessor{
 	// Mapa
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
-    private Grid grid;
+    private List<Grid> grid;
+    private int level = 0; 
     
     // Camera
     private OrthographicCamera camera;
@@ -40,10 +46,12 @@ public class Game extends AbstractScreen implements InputProcessor{
     private String classe;
     private String race;
 	
-    public Game(String name, String classe, String race) {
+    public Game(String name, String classe, String race, int level, List<Grid> params) {
     	this.name = name;
     	this.classe = classe;
     	this.race = race;
+    	this.level = level;
+    	this.grid = params;
     }
     
     @Override
@@ -60,61 +68,67 @@ public class Game extends AbstractScreen implements InputProcessor{
         camera.setToOrtho(false,w,h);
         camera.update();
         
-        grid = new Grid(128, 128);
+        try {
+        	if (grid.get(this.level) != null) {
+        		System.out.println("Você já esteve aqui");
+        	}
+        } catch (java.lang.IndexOutOfBoundsException e) {
+        	grid.add(this.level, new Grid(64, 64));
 
-        final DungeonGenerator dungeonGenerator = new DungeonGenerator();
-        dungeonGenerator.setRoomGenerationAttempts(200);
-        dungeonGenerator.setMaxRoomSize(13);
-        dungeonGenerator.setMaxRoomsAmount(30);
-        dungeonGenerator.setTolerance(10); // Max difference between width and height.
-        dungeonGenerator.setMinRoomSize(9);
-        dungeonGenerator.setRandomConnectorChance(0f); // One way to solve the maze.
-        dungeonGenerator.generate(grid);
-        
+        	final DungeonGenerator dungeonGenerator = new DungeonGenerator();
+        	dungeonGenerator.setRoomGenerationAttempts(200);
+        	dungeonGenerator.setMaxRoomSize(13);
+        	dungeonGenerator.setMaxRoomsAmount(10);
+        	dungeonGenerator.setTolerance(10); // Max difference between width and height.
+        	dungeonGenerator.setMinRoomSize(9);
+	        dungeonGenerator.setRandomConnectorChance(0f); // One way to solve the maze.
+	        dungeonGenerator.generate(grid.get(this.level));
+        }
+	        
         tiledMap = new TiledMap();
         MapLayers layers = tiledMap.getLayers();
         
         TiledMapTileLayer layer1 = new TiledMapTileLayer(128, 128, 32, 32);
-        Cell cell[][] = new Cell[grid.getWidth()][grid.getHeight()];
+        Cell cell[][] = new Cell[grid.get(this.level).getWidth()][grid.get(this.level).getHeight()];
         
         // Adiciona elementos ao mapa
         final Color color = new Color();
-        for (int x = 0; x < grid.getWidth(); x++) {
-            for (int y = 0; y < grid.getHeight(); y++) {
+        for (int x = 0; x < grid.get(this.level).getWidth(); x++) {
+            for (int y = 0; y < grid.get(this.level).getHeight(); y++) {
             	cell[x][y] = new Cell();
             	
-                final float cell1 = 1f - grid.get(x, y);
+                final float cell1 = 1f - grid.get(this.level).get(x, y);
                 color.set(cell1, cell1, cell1, 1f);
                 
                 // Verifica se eh fundo preto
-                if (grid.get(x, y) == 1) 
+                if (grid.get(this.level).get(x, y) == 1) 
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32*32, 32 * 32, 32, 32)));
                 // Verifica se eh canto superior
-                else if (grid.get(x, y) == 0.5 && ((grid.get(x, y+1) == 1 && grid.get(x + 1, y) == 1) || 
-                		(grid.get(x, y + 1) == 1 && grid.get(x - 1, y) == 1))) {  
-                	grid.set(x, y, 1.5f);
+                else if (grid.get(this.level).get(x, y) == 0.5 && ((grid.get(this.level).get(x, y+1) == 1 && grid.get(this.level).get(x + 1, y) == 1) || 
+                		(grid.get(this.level).get(x, y + 1) == 1 && grid.get(this.level).get(x - 1, y) == 1))) {  
+                	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 32, 32 * 20, 32, 32)));
                 // Verifica se eh canto inferior
-                } else if (grid.get(x, y) == 0.5 && ((grid.get(x, y - 1) == 1 && grid.get(x + 1, y) == 1) || 
-                		(grid.get(x, y - 1) == 1 && grid.get(x - 1, y) == 1))) {
-                	grid.set(x, y, 1.5f);
+                } else if (grid.get(this.level).get(x, y) == 0.5 && ((grid.get(this.level).get(x, y - 1) == 1 && grid.get(this.level).get(x + 1, y) == 1) || 
+                		(grid.get(this.level).get(x, y - 1) == 1 && grid.get(this.level).get(x - 1, y) == 1))) {
+                	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 34, 32 * 20, 32, 32)));
                 // Verifica se eh lado esquerdo ou direito
-                } else if (grid.get(x, y) == 0.5 && ((grid.get(x + 1, y) == 1) || (grid.get(x - 1, y) == 1)) &&
-                		(grid.get(x, y + 1) != 0 && grid.get(x, y - 1) != 0)) {
-                	grid.set(x, y, 1.5f);
+                } else if (grid.get(this.level).get(x, y) == 0.5 && ((grid.get(this.level).get(x + 1, y) == 1) || (grid.get(this.level).get(x - 1, y) == 1)) &&
+                		(grid.get(this.level).get(x, y + 1) != 0 && grid.get(this.level).get(x, y - 1) != 0)) {
+                	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 30, 32 * 20, 32, 32)));
                 // Verifica se eh lado superior ou inferior
-                } else if (grid.get(x, y) == 0.5 && (grid.get(x, y + 1) == 1 || grid.get(x, y - 1) == 1) && 
-                		(grid.get(x, y + 1) == 0.5 || grid.get(x, y - 1) == 0.5) && 
-                		(grid.get(x + 1, y) == 0.5 || grid.get(x - 1, y) == 0.5)) {
-                	grid.set(x, y, 1.5f);
+                } else if (grid.get(this.level).get(x, y) == 0.5 && (grid.get(this.level).get(x, y + 1) == 1 || grid.get(this.level).get(x, y - 1) == 1) && 
+                		(grid.get(this.level).get(x, y + 1) == 0.5 || grid.get(this.level).get(x, y - 1) == 0.5) && 
+                		(grid.get(this.level).get(x + 1, y) == 0.5 || grid.get(this.level).get(x - 1, y) == 0.5)) {
+                	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 31, 32 * 20, 32, 32)));
                 // Verifica se eh caminho
-                } else if (grid.get(x, y) == 0)
+                } else if (grid.get(this.level).get(x, y) == 0)
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 9, 32 * 21, 32, 32)));
                 // Verifica se eh sala
-                else if (grid.get(x, y) == 0.5) {
+                else if (grid.get(this.level).get(x, y) == 0.5) {
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 8, 32 * 21, 32, 32)));
                 	
                 	if (playerX == 0 && playerY == 0) {
@@ -125,10 +139,8 @@ public class Game extends AbstractScreen implements InputProcessor{
                 
                 layer1.setCell(x, y, cell[x][y]);
             }
+            layers.add(layer1);
         }
-        
-        
-        layers.add(layer1);
         
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         
@@ -186,35 +198,40 @@ public class Game extends AbstractScreen implements InputProcessor{
 	@Override
 	public boolean keyUp(int keycode) {
         if(keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
-        	if (grid.get(playerX/32 - 1, playerY/32) == 0 || grid.get(playerX/32 - 1, playerY/32) == 0.5) {
+        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0 ||
+        			grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0.5) {
         		playerX -= 32;
 	            camera.translate(-32,0);
 	            player.translateX(-32f);
         	}
         }
         if(keycode == Input.Keys.RIGHT || keycode == Input.Keys.D) {
-        	if (grid.get(playerX/32 + 1, playerY/32) == 0 || grid.get(playerX/32 + 1, playerY/32) == 0.5) {
+        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32) == 0 ||
+        			grid.get(this.level).get(playerX/32 + 1, playerY/32) == 0.5) {
         		playerX += 32;
 	            camera.translate(32,0);
 	            player.translateX(32f);
         	}
         }
         if(keycode == Input.Keys.UP || keycode == Input.Keys.W) {
-        	if (grid.get(playerX/32, playerY/32 + 1) == 0 || grid.get(playerX/32, playerY/32 + 1) == 0.5) {
+        	if (grid.get(this.level).get(playerX/32, playerY/32 + 1) == 0 ||
+        			grid.get(this.level).get(playerX/32, playerY/32 + 1) == 0.5) {
         		playerY += 32;
 	            camera.translate(0,32);
 	            player.translateY(32f);
         	}
         }
         if(keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
-        	if (grid.get(playerX/32, playerY/32 - 1) == 0 || grid.get(playerX/32, playerY/32 - 1) == 0.5) {
+        	if (grid.get(this.level).get(playerX/32, playerY/32 - 1) == 0 ||
+        			grid.get(this.level).get(playerX/32, playerY/32 - 1) == 0.5) {
         		playerY -= 32;
 	            camera.translate(0,-32);
 	            player.translateY(-32f);
         	}
         }
         if (keycode == Input.Keys.Q) {
-        	if (grid.get(playerX/32 - 1, playerY/32 + 1) == 0 || grid.get(playerX/32 - 1, playerY/32 + 1) == 0.5) {
+        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) == 0 ||
+        			grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) == 0.5) {
         		playerX -= 32;
         		playerY += 32;
 	            camera.translate(-32,32);
@@ -222,7 +239,8 @@ public class Game extends AbstractScreen implements InputProcessor{
         	}
         }
         if (keycode == Input.Keys.E) {
-        	if (grid.get(playerX/32 + 1, playerY/32 + 1) == 0 || grid.get(playerX/32 + 1, playerY/32 + 1) == 0.5) {
+        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) == 0 ||
+        			grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) == 0.5) {
         		playerX += 32;
         		playerY += 32;
 	            camera.translate(32,32);
@@ -230,7 +248,8 @@ public class Game extends AbstractScreen implements InputProcessor{
         	}
         }
         if (keycode == Input.Keys.Z) {
-        	if (grid.get(playerX/32 - 1, playerY/32 - 1) == 0 || grid.get(playerX/32 - 1, playerY/32 - 1) == 0.5) {
+        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) == 0 ||
+        			grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) == 0.5) {
         		playerX -= 32;
         		playerY -= 32;
 	            camera.translate(-32,-32);
@@ -238,16 +257,22 @@ public class Game extends AbstractScreen implements InputProcessor{
         	}
         }
         if (keycode == Input.Keys.C) {
-        	if (grid.get(playerX/32 + 1, playerY/32 - 1) == 0 || grid.get(playerX/32 + 1, playerY/32 - 1) == 0.5) {
+        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) == 0 ||
+        			grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) == 0.5) {
         		playerX += 32;
         		playerY -= 32;
 	            camera.translate(32,-32);
 	            player.translate(32f, -32f);
         	}
         }
-        if(keycode == Input.Keys.NUM_1) {
+        
+        if(keycode == Input.Keys.NUM_1) 
             tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
-        }
+        
+        if(keycode == Input.Keys.NUM_2) 
+        	ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
+					this.name, this.classe, this.race, this.level + 1, this.grid);
+        
         return false;
 	}
 

@@ -1,5 +1,7 @@
 package br.com.poo.nethack.screen;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -14,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.github.czyzby.noise4j.map.Grid;
 
 import br.com.poo.nethack.util.ScreenEnum;
 import br.com.poo.nethack.util.ScreenManager;
@@ -76,7 +79,7 @@ public class SelectPlayer extends AbstractScreen{
 						.showScreen(ScreenEnum.GAME,
 								nameTextField.getText(),
 								classes.getSelected(),
-								race.getSelected());
+								race.getSelected(), 0, new ArrayList<Grid>());
 					}
 				});   
 
