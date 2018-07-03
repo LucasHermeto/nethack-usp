@@ -23,7 +23,7 @@ import br.com.poo.nethack.util.ScreenManager;
 
 public class SelectPlayer extends AbstractScreen{
 	private Skin skin;
-	private Stage stage; 
+	private Stage stage;
 	
 	@Override
 	public void buildStage() {
