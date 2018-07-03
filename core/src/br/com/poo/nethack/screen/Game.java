@@ -9,9 +9,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -22,15 +25,26 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.github.czyzby.noise4j.map.Grid;
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator;
 
+import br.com.poo.nethack.items.Consumables;
+import br.com.poo.nethack.player.Player;
 import br.com.poo.nethack.util.ScreenEnum;
 import br.com.poo.nethack.util.ScreenManager;
+import de.tomgrill.gdxdialogs.core.GDXDialogs;
+import de.tomgrill.gdxdialogs.core.GDXDialogsSystem;
+import de.tomgrill.gdxdialogs.core.dialogs.GDXButtonDialog;
+import de.tomgrill.gdxdialogs.core.listener.ButtonClickListener;
 
+/** Classe principal do jogo
+ * 
+ * @author hermeto
+ *
+ */
 public class Game extends AbstractScreen implements InputProcessor{
 	// Mapa
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
     private List<Grid> grid;
-    private int level = 0; 
+    private int level = 0;
     
     // Camera
     private OrthographicCamera camera;
@@ -38,29 +52,51 @@ public class Game extends AbstractScreen implements InputProcessor{
     // Jogador
     private SpriteBatch sb;
     private Texture texture;
-    private TextureRegion textureRegion;
-    private Sprite player;
+    private Player player;
     private int playerX = 0;
     private int playerY = 0;
-    private String name;
-    private String classe;
-    private String race;
+    private int time = 0;
+    
+    // Inventario
+    private boolean isOpen = false;
+//    private List<Sprite> items = new ArrayList<Sprite>();
+    
+    // Textos
+    private GlyphLayout glyphLayout;
+	private BitmapFont font;
+	private String textDescription;
+	private String textStatus;
+	private GDXDialogs dialogs = GDXDialogsSystem.install();
 	
-    public Game(String name, String classe, String race, int level, List<Grid> params) {
-    	this.name = name;
-    	this.classe = classe;
-    	this.race = race;
+    public Game(Player player, int level, List<Grid> params) {
+    	this.player = player;
+    	
     	this.level = level;
     	this.grid = params;
     }
     
     @Override
-	public void buildStage() { 	
-    	System.out.println("Name: " + this.name + "\nClasse: "
-    			+ this.classe + "\nRace: " + this.race);
-    	texture = new Texture(Gdx.files.internal("sprite.png"));
+	public void buildStage() {
+    	// Textos
+    	FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial_narrow_7.ttf"));
+    	FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+    	parameter.size = 16;
+    	
+    	font = generator.generateFont(parameter);
+    	
+    	generator.dispose();
+    	textDescription = "Hello " + player.getName() + ", Welcome to NetHack! You are a " +
+    			player.getGender() + " " + player.getRacename() + " " + player.getClasse() + ".";
+    	
+    	textStatus = player.getName() + " the "+ player.getClasse() + "    "+ "St:" +
+    			player.getSt() + " Dx:" + player.getDx() + " Co:" + player.getCo() +
+    			" In:" + player.getIn() + " Wi:" + player.getWi() +" Ch:" + player.getCh() + "\n" +
+    			"DLvl:" + this.level + "    " + "$:" + player.getGold() + " HP:" +
+    			player.getLife() + "(" + player.getMax_life() + ")" + " PW:" + player.getPower() +
+    			"(" + player.getMax_power() + ")" + " AC:" + player.getAC() + " Xp:"+ player.getXp() + " T:" + time;
     	
         // Mapa
+    	texture = new Texture(Gdx.files.internal("sprite.png"));
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
@@ -144,10 +180,9 @@ public class Game extends AbstractScreen implements InputProcessor{
         
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         
-        // Personagem
         sb = new SpriteBatch();
-		textureRegion = new TextureRegion(texture, 0, 9 * 32, 32, 32);
-		player = new Sprite(textureRegion);
+        glyphLayout = new GlyphLayout();
+        
 		player.setPosition(playerX, playerY);
         
         camera.position.x = this.playerX;
@@ -167,6 +202,21 @@ public class Game extends AbstractScreen implements InputProcessor{
         
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
+        
+		font.draw(sb, textDescription, player.getX() - 318f, player.getY() + 234f);
+		font.draw(sb, textStatus, player.getX() - 318f, player.getY() - 192f);
+		
+		if (isOpen) {
+			font.draw(sb, "Inventory:", player.getX() + 200f, player.getY() + 200f);
+			for (int i = 0; i < player.getInventory().size(); i++) {
+				String textItem = player.getInventory().get(i).getNome();
+				if(player.getInventory().get(i) instanceof Consumables) 
+					textItem += "  " + "x" + ((Consumables)player.getInventory().get(i)).getQuant();
+				glyphLayout.setText(font, textItem);
+				font.draw(sb, textItem, player.getX() + 318f - glyphLayout.width, player.getY() + (168f - i * 32));	
+			}
+		}
+		
         player.draw(sb);
         sb.end();
     }
@@ -197,12 +247,38 @@ public class Game extends AbstractScreen implements InputProcessor{
 
 	@Override
 	public boolean keyUp(int keycode) {
+		if (player.getLife() <= 0) {
+			player.setScore(player.getScore() + player.getGold());
+			
+			GDXButtonDialog bDialog = dialogs.newDialog(GDXButtonDialog.class);
+			bDialog.setTitle("Here Lies...");
+			bDialog.setMessage("Goodbye " + player.getName() + " the " + player.getRole().getName() + "...\n"
+					+ "You died in The Dungeons of Doom on dungeon level " + (this.level + 1) + " with " + player.getScore() + " points,\n"
+					+ "and " + player.getGold() + " pieces of gold, after " + time + " moves.\n"
+					+ "You were level " + player.getLevel() + " with a maximun of " + player.getMax_life() + " hit points when you died.\n"
+					+ "R.I.P.");
+
+			bDialog.setClickListener(new ButtonClickListener() {
+
+				@Override
+				public void click(int button) {
+					Gdx.app.exit();
+				}
+			});
+
+			bDialog.addButton("Ok");
+
+			bDialog.build().show();
+		}
+		
+		// Movimento
         if(keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
         	if (grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0 ||
         			grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0.5) {
         		playerX -= 32;
 	            camera.translate(-32,0);
 	            player.translateX(-32f);
+	            this.time++;
         	}
         }
         if(keycode == Input.Keys.RIGHT || keycode == Input.Keys.D) {
@@ -211,6 +287,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         		playerX += 32;
 	            camera.translate(32,0);
 	            player.translateX(32f);
+	            this.time++;
         	}
         }
         if(keycode == Input.Keys.UP || keycode == Input.Keys.W) {
@@ -219,6 +296,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         		playerY += 32;
 	            camera.translate(0,32);
 	            player.translateY(32f);
+	            this.time++;
         	}
         }
         if(keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
@@ -227,6 +305,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         		playerY -= 32;
 	            camera.translate(0,-32);
 	            player.translateY(-32f);
+	            this.time++;
         	}
         }
         if (keycode == Input.Keys.Q) {
@@ -236,6 +315,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         		playerY += 32;
 	            camera.translate(-32,32);
 	            player.translate(-32f, 32f);
+	            this.time++;
         	}
         }
         if (keycode == Input.Keys.E) {
@@ -245,6 +325,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         		playerY += 32;
 	            camera.translate(32,32);
 	            player.translate(32f, 32f);
+	            this.time++;
         	}
         }
         if (keycode == Input.Keys.Z) {
@@ -254,6 +335,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         		playerY -= 32;
 	            camera.translate(-32,-32);
 	            player.translate(-32f, -32f);
+	            this.time++;
         	}
         }
         if (keycode == Input.Keys.C) {
@@ -263,15 +345,43 @@ public class Game extends AbstractScreen implements InputProcessor{
         		playerY -= 32;
 	            camera.translate(32,-32);
 	            player.translate(32f, -32f);
+	            this.time++;
         	}
         }
         
+        // Inventario
+        if (keycode == Input.Keys.I) {
+        	isOpen = !isOpen;
+        	
+//        	// Get item texture
+//        	if (isOpen) {
+//	        	for (Item i : player.getInventory()) {
+//	        		if (i.getNome() == "Apple" && !items.contains(i))
+//	        			items.add(new Sprite(new TextureRegion(texture, 32 * 4, 32 * 16, 32, 32)));
+//	        	}
+//        	}
+        }
+        
+        // Extra
         if(keycode == Input.Keys.NUM_1) 
             tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
         
         if(keycode == Input.Keys.NUM_2) 
         	ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
-					this.name, this.classe, this.race, this.level + 1, this.grid);
+					this.player, this.level + 1, this.grid);
+        
+        if(keycode == Input.Keys.NUM_3) 
+        	player.setLife(player.getLife() - 1);
+        
+    	textDescription = "\"Siga em frente, olhe para o lado...\"";
+    	this.player.Alive();
+    	
+    	textStatus = player.getName() + " the "+ player.getClasse() + "    "+ "St:" +
+    			player.getSt() + " Dx:" + player.getDx() + " Co:" + player.getCo() +
+    			" In:" + player.getIn() + " Wi:" + player.getWi() +" Ch:" + player.getCh() + " " + player.getState_cap()+ "\n" +
+    			"DLvl:" + this.level + "    " + "$:" + player.getGold() + " HP:" +
+    			player.getLife() + "(" + player.getMax_life() + ")" + " PW:" + player.getPower() +
+    			"(" + player.getMax_power() + ")" + " AC:" + player.getAC() + " Xp:"+ player.getXp() + " T:" + this.time + " " + player.getNu_state();
         
         return false;
 	}

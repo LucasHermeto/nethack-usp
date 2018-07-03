@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.github.czyzby.noise4j.map.Grid;
 
+import br.com.poo.nethack.player.Player;
 import br.com.poo.nethack.screen.AbstractScreen;
 import br.com.poo.nethack.screen.Game;
 import br.com.poo.nethack.screen.MainMenuScreen;
@@ -23,7 +24,7 @@ public enum ScreenEnum {
     },
     GAME {
         public AbstractScreen getScreen(Object... params) {
-            return new Game((String) params[0], (String) params[1], (String) params[2], (Integer) params[3], (List<Grid>) params[4]);
+            return new Game((Player) params[0], (Integer) params[1], (List<Grid>) params[2]);
         }
     };
  

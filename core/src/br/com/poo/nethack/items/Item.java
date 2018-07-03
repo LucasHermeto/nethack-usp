@@ -1,0 +1,63 @@
+package br.com.poo.nethack.items;
+
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
+import br.com.poo.nethack.player.Player;
+
+/**
+ * class Itens: Representacao de todos os itens presentes nesse jogo
+ * @author braga
+ *
+ */
+public abstract class Item extends Sprite {
+	private String nome;
+	private String descricao;
+	private int weight;
+	
+	public Item(String n, String des, int w, char r,int l, int c) {
+		setNome(n);
+		setDescricao(des);
+		setWeight(w);
+	}
+	
+	/**
+	 * Quando o player anda para a mesma posicao que um item
+	 * ele armazena no inventario, porem tem excessoes
+	 */
+//	public void onInteract(Player p) {
+//		p.addInventory(this);
+//		System.out.println("You pick a " + this.getNome() + "!");
+//	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+	
+	public void use(Player p, int index) {
+		
+	}
+
+	public void use(Player p) {
+		// TODO Auto-generated method stub
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
+	public int getWeight() {
+		return weight;
+	}
+
+	public void setWeight(int weight) {
+		this.weight = weight;
+	}
+}
