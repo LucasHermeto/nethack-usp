@@ -4,8 +4,8 @@ import br.com.poo.nethack.util.Dices;
 // Claw
 public class Gremlin extends Monster {
 
-	public Gremlin(int l, int c) {
-		super("Gremlin", new Dices(1,6,0), 5, 2, l, c);
+	public Gremlin() {
+		super("Gremlin", new Dices(1,6,0), 5, 2, 32*1, 32*1);
 		// TODO Auto-generated constructor stub
 	}
 

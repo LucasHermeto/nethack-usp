@@ -1,6 +1,9 @@
 package br.com.poo.nethack.monster;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import br.com.poo.nethack.util.Dices;
 import br.com.poo.nethack.player.Player;
@@ -17,7 +20,8 @@ public abstract class Monster extends Sprite{
 	private int xp;
 	private int hp;
 	private String name;
-	public Monster(String n, Dices d, int le, int a, int l, int c) {
+	public Monster(String n, Dices d, int le, int a, int SpriteX, int SpriteY) {
+		super(new TextureRegion(new Texture(Gdx.files.internal("sprite.png")), SpriteX, SpriteY, 32, 32));
 		// TODO Auto-generated constructor stub
 		setDamage(d);
 		setLevel(le);
