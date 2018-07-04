@@ -312,7 +312,13 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            player.translateX(-32f);
 		            this.time++;
 	        	}
-        	}else System.out.println("It's a Monster");
+        	}else {
+        		((Monster) gameobjects.get((int)(grid.get(this.level).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
+        		if(((Monster) gameobjects.get((int)(grid.get(this.level).get(playerX/32 - 1, playerY/32) -2))).getHp() <= 0) {
+        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32) -2));
+        			grid.get(this.level).set(playerX/32 - 1, playerY/32, 0f);
+        		}
+        	}
         }
         if(keycode == Input.Keys.RIGHT || keycode == Input.Keys.D) {
         	if(!(grid.get(this.level).get(playerX/32 + 1, playerY/32) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 + 1, playerY/32)-2) instanceof Monster))) {
@@ -330,7 +336,13 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            this.time++;
 		          
 	        	}
-        	}else System.out.println("It's a Monster");
+        	}else {
+        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
+        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32)-2))).getHp() <= 0) {
+	        		gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32) -2));
+	    			grid.get(this.level).set(playerX/32 + 1, playerY/32, 0f);
+        		}
+        	}
         }
         if(keycode == Input.Keys.UP || keycode == Input.Keys.W) {
         	if(!( grid.get(this.level).get(playerX/32, playerY/32 + 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32, playerY/32 + 1)-2) instanceof Monster))) {
@@ -347,7 +359,13 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            player.translateY(32f);
 		            this.time++;
 	        	}
-        	}else System.out.println("It's a Monster");
+        	}else {
+        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
+        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2))).getHp() <= 0) {
+        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2));
+	            	grid.get(this.level).set(playerX/32, playerY/32 + 1, 0f);
+        		}
+        	}
         }
         if(keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
         	if(!(grid.get(this.level).get(playerX/32, playerY/32 - 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32, playerY/32 - 1)-2) instanceof Monster))) {
@@ -364,7 +382,13 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            player.translateY(-32f);
 		            this.time++;
 	        	}
-        	}else System.out.println("It's a Monster");
+        	}else {
+        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
+        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2))).getHp() <= 0) {
+        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2));
+	            	grid.get(this.level).set(playerX/32, playerY/32 - 1, 0f);
+        		}
+        	}
         }
         if (keycode == Input.Keys.Q) {
         	if(!(grid.get(this.level).get(playerX/32 - 1, playerY/32 +1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 - 1, playerY/32 +1)-2) instanceof Monster))){
@@ -382,7 +406,13 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            player.translate(-32f, 32f);
 		            this.time++;
 	        	}
-        	}else System.out.println("It's a Monster");
+        	}else {
+        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
+        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2))).getHp() <= 0) {
+        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2));
+	            	grid.get(this.level).set(playerX/32 - 1, playerY/32 + 1, 0f);
+        		}
+        	}
         }
         if (keycode == Input.Keys.E) {
         	if(!(grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1)-2) instanceof Monster))){
@@ -400,7 +430,13 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            player.translate(32f, 32f);
 		            this.time++;
 	        	}
-        	}else System.out.println("It's a Monster");
+        	}else {
+        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
+        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2))).getHp() <= 0){
+        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2));
+	            	grid.get(this.level).set(playerX/32 + 1, playerY/32 + 1, 0f);
+        		}
+        	}
         }
         if (keycode == Input.Keys.Z) {
         	if(!(grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1)-2) instanceof Monster))){
@@ -418,7 +454,13 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            player.translate(-32f, -32f);
 		            this.time++;
 	        	}
-        	}else System.out.println("It's a Monster");
+        	}else {
+        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
+        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2))).getHp() <= 0){
+        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2));
+	            	grid.get(this.level).set(playerX/32 - 1, playerY/32 - 1, 0f);
+        		}
+        	}
         }
         if (keycode == Input.Keys.C) {
         	if(!(grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1)-2) instanceof Monster))){
@@ -436,7 +478,13 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            player.translate(32f, -32f);
 		            this.time++;
 	        	}
-        	}else System.out.println("It's a Monster");
+        	}else {
+        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
+        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2))).getHp() <= 0) {
+        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2));
+	            	grid.get(this.level).set(playerX/32 + 1, playerY/32 - 1, 0f);
+        		}
+        	}
         }
         
         // Inventario

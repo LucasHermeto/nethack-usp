@@ -9,3 +9,4 @@ public class Jackal extends Monster{
 		// TODO Auto-generated constructor stub
 	}
 }
+

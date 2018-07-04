@@ -32,7 +32,7 @@ public abstract class Monster extends Sprite{
 			setHp(new Dices(level,8,0).Roll());
 		else
 			setHp(new Dices(1,4,0).Roll());
-		setXp((level*level)+20);
+		setXp((level*level)+1);
 		if(AC == 2)
 			setXp(getXp() + 5);
 		else if(AC == 1)
