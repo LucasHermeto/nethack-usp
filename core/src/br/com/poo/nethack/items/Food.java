@@ -11,8 +11,8 @@ import br.com.poo.nethack.player.Player;
 public abstract class Food extends Consumables{
 	private int nutrition;
 	
-	public Food(String n, String des, int quant, int nu, int w, int l, int c) {
-		super(n, des, quant, w, l, c);
+	public Food(String n, String des, int quant, int nu, int w, int SpriteX, int SpriteY) {
+		super(n, des, quant, w, SpriteX, SpriteY);
 		// TODO Auto-generated constructor stub
 		nutrition = nu;
 	}

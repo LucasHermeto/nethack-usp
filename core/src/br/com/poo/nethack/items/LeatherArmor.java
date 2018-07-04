@@ -7,12 +7,8 @@ package br.com.poo.nethack.items;
  *
  */
 public class LeatherArmor extends Armor{
-	public LeatherArmor(int l, int c) {
-		super("Leather Armor", "Leather Armor is a type of body armor", 2, 150, l, c);
-		// TODO Auto-generated constructor stub
-	}
-	
 	public LeatherArmor() {
-		super("Leather Armor", "Leather Armor is a type of body armor", 2, 150, -1, -1);
+		super("Leather Armor", "Leather Armor is a type of body armor", 2, 150, 32*29, 32*12);
+		// TODO Auto-generated constructor stub
 	}
 }

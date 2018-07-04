@@ -10,13 +10,8 @@ import br.com.poo.nethack.util.Dices;
  */
 public class PotionExtraHealing extends Potions{
 
-	public PotionExtraHealing(int quant, int l, int c) {
-		super("Potion of Extra Healing", "This will heal you a lot.", quant, 20, l, c);
-		// TODO Auto-generated constructor stub
-	}
-
 	public PotionExtraHealing(int quant) {
-		super("Potion of Extra Healing", "This will heal you a lot.", quant, 20, -1, -1);
+		super("Potion of Extra Healing", "This will heal you a lot.", quant, 20, 32*25, 32*16);
 		// TODO Auto-generated constructor stub
 	}
 	

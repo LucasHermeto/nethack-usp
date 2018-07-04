@@ -9,11 +9,7 @@ import br.com.poo.nethack.util.Dices;
  *
  */
 public class BattleAxe extends Weapon{
-	public BattleAxe(int l, int c) {
-		super("Battle Axe", "A very powerful two-handed version of the regular Axe", new Dices(1, 10, 2), 0, 120, l, c);
-	}
-	
 	public BattleAxe() {
-		super("Battle Axe", "A very powerful two-handed version of the regular Axe", new Dices(1, 10, 2), 0, 120, -1, -1);
+		super("Battle Axe", "A very powerful two-handed version of the regular Axe", new Dices(1, 10, 2), 0, 120, 32*22, 32*10);
 	}
 }

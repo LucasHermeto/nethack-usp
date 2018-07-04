@@ -5,13 +5,9 @@ import br.com.poo.nethack.util.Dices;
 
 public class PotionAbility extends Potions{
 
-	public PotionAbility(int l, int c) {
-		super("Potion of gain ability", "It can increase your atributes", 1, 20, l, c);
-		// TODO Auto-generated constructor stub
-	}
-	
 	public PotionAbility() {
-		super("Potion of gain ability", "It can increase your atributes", 1, 20, -1, -1);
+		super("Potion of gain ability", "It can increase your atributes", 1, 20, 32*24, 32*16);
+		// TODO Auto-generated constructor stub
 	}
 	
 	@Override

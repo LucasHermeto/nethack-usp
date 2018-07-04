@@ -10,12 +10,8 @@ import br.com.poo.nethack.util.Dices;
  */
 public class Axe extends Weapon {
 
-	public Axe(int l, int c) {
-		super("Axe", "CHOP THE WOOD", new Dices(1,5, 0), 0, 60, l, c);
-		// TODO Auto-generated constructor stub
-	}
-
 	public Axe() {
-		super("Axe", "CHOP THE WOOD", new Dices(1,5, 0), 0, 60, -1, -1);
+		super("Axe", "CHOP THE WOOD", new Dices(1,5, 0), 0, 60, 32*21, 32*10);
+		// TODO Auto-generated constructor stub
 	}
 }

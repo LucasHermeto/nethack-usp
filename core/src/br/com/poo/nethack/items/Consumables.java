@@ -9,8 +9,8 @@ package br.com.poo.nethack.items;
 public class Consumables extends Item{
 	private int quant;
 	
-	public Consumables(String n, String des, int quant, int w, int l, int c) {
-		super(n, des, w, 'c', l, c);
+	public Consumables(String n, String des, int quant, int w, int SpriteX, int SpriteY) {
+		super(n, des, w, SpriteX, SpriteY);
 		this.setQuant(quant);
 	}
 

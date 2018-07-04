@@ -45,8 +45,6 @@ public class Player extends Sprite {
 	private Role role;
 	private Race race;
 	private String gender;
-	private int spriteX;
-	private int spriteY;
 	private int level = 1;
 	private int gold = 0;
 	private List<Item> Inventory = new ArrayList<Item>();
@@ -90,32 +88,25 @@ public class Player extends Sprite {
 		super(new TextureRegion(new Texture(Gdx.files.internal("sprite.png")), spriteX, spriteY, 32, 32));
 		
 		this.name = name;
-		
-		this.setSpriteY(9 * 32);
+
 		// Adiciona Classe
 		if(role == 1) {
 			setRole(new Barbarian());
-			this.setSpriteX(16 * 32);
-			
-			addInventory(new FoodRation());
-			addInventory(new FoodRation());
+		
+			addInventory(new FoodRation(2));
 		}else if (role == 2) {
 			setRole(new Priest());
-			this.setSpriteX(22 * 32);
 			
 		}else if (role == 3) {
 			setRole(new Knight());
-			this.setSpriteX(20 * 32);
 			
 			addInventory(new Apple(new Dices(1,11,9).Roll()));
 		}else if (role == 4) {
 			setRole(new Rogue());
-			this.setSpriteX(25 * 32);
 			
-			addInventory(new PotionInvisibility());
+			addInventory(new PotionInvisibility(3));
 		}else if(role == 5){
 			setRole(new Healer());
-			this.setSpriteX(19 * 32);
 			
 			setGold(new Dices(1,1000, 1000).Roll());
 			addInventory(new Apple(new Dices(1,5,5).Roll()));
@@ -123,14 +114,11 @@ public class Player extends Sprite {
 			addInventory(new PotionExtraHealing(4));
 		}else if(role == 6){
 			setRole(new Ranger());
-			this.setSpriteX(24 * 32);
 			
-			addInventory(new FoodRation());
-			addInventory(new FoodRation());
+			addInventory(new FoodRation(2));
 			addInventory(new Arrow(new Dices(1,100, 80).Roll()));
 		}else if(role == 7){
 			setRole(new Wizard());
-			this.setSpriteX(29 * 32);
 			
 			addInventory(new PotionAbility());
 			addInventory(new PotionSleeping(1));
@@ -464,10 +452,10 @@ public class Player extends Sprite {
 	 */
 	public void Regeneration() {
 		reg_count++;
-		pw_count++;
+		setPw_count(getPw_count() + 1);
 		if(getState_cap().equals(new String("Stressed")) || getState_cap().equals(new String("Strained")) || getState_cap().equals(new String("Overloaded"))) {
 			reg_count = 0;
-			pw_count = 0;
+			setPw_count(0);
 		}
 		if(reg_count == reg_turn) {
 			reg_count = 0;
@@ -476,8 +464,8 @@ public class Player extends Sprite {
 				life = max_life;
 			}
 		}
-		if(pw_count > (38 - getLevel())*(2/3)) {
-			pw_count = 0;
+		if(getPw_count() > (38 - getLevel())*(2/3)) {
+			setPw_count(0);
 			power += new Dices(1,((role.getWis() + role.getInt())/15)+1,0).Roll();
 			if(power > max_power)
 				power = max_power;
@@ -898,27 +886,19 @@ public class Player extends Sprite {
 		this.score = score;
 	}
 
-	public int getSpriteX() {
-		return spriteX;
-	}
-
-	public void setSpriteX(int spriteX) {
-		this.spriteX = spriteX;
-	}
-
-	public int getSpriteY() {
-		return spriteY;
-	}
-
-	public void setSpriteY(int spriteY) {
-		this.spriteY = spriteY;
-	}
-
 	public List<Item> getInventory() {
 		return Inventory;
 	}
 
 	public void setInventory(ArrayList<Item> inventory) {
 		Inventory = inventory;
+	}
+
+	public int getPw_count() {
+		return pw_count;
+	}
+
+	public void setPw_count(int pw_count) {
+		this.pw_count = pw_count;
 	}
 }

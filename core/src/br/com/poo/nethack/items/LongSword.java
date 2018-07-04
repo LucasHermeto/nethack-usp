@@ -9,12 +9,8 @@ import br.com.poo.nethack.util.Dices;
  *
  */
 public class LongSword extends Weapon{
-	public LongSword(int l, int c) {
-		super("Long Sword", "One of the more popular weapons.", new Dices(1, 10, 0), 0, 40, l, c);
-		// TODO Auto-generated constructor stub
-	}
-	
 	public LongSword() {
-		super("Long Sword", "One of the more popular weapons.", new Dices(1, 10, 0), 0, 40, -1, -1);
+		super("Long Sword", "One of the more popular weapons.", new Dices(1, 10, 0), 0, 40, 32*31, 32*10);
+		// TODO Auto-generated constructor stub
 	}
 }

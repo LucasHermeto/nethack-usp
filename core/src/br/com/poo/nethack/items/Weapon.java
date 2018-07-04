@@ -15,8 +15,8 @@ public abstract class Weapon extends Item{
 	private Dices Damage;
 	private int hitBonus;
 	
-	public Weapon(String n, String des, Dices d, int h, int w, int l, int c) {
-		super(n,des, w,'W', l, c);
+	public Weapon(String n, String des, Dices d, int h, int w, int SpriteX, int SpriteY) {
+		super(n,des, w, SpriteX, SpriteY);
 		setDamage(d);
 		setHitBonus(h);
 	}

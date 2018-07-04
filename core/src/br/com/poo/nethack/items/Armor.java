@@ -13,8 +13,8 @@ import br.com.poo.nethack.player.Player;
  */
 public abstract class Armor extends Item{
 	private int AC;
-	public Armor(String n, String des, int a, int w, int l, int c) {
-		super(n, des, w,'a', l, c);
+	public Armor(String n, String des, int a, int w, int SpriteX, int SpriteY) {
+		super(n, des, w, SpriteX, SpriteY);
 		AC = a;
 	}
 	

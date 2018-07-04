@@ -5,13 +5,9 @@ import br.com.poo.nethack.util.Dices;
 
 public class PotionInvisibility extends Potions{
 
-	public PotionInvisibility(int quant, int l, int c) {
-		super("Potion of invisibility", "Now you see and now you don't", quant, 20, l, c);
+	public PotionInvisibility(int quant) {
+		super("Potion of invisibility", "Now you see and now you don't", quant, 20, 32*27, 32*16);
 		// TODO Auto-generated constructor stub
-	}
-
-	public PotionInvisibility() {
-		super("Potion of invisibility", "Now you see and now you don't", 3, 20, -1, -1);
 	}
 	
 	@Override

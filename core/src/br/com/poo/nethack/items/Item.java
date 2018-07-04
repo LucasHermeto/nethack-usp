@@ -1,6 +1,9 @@
 package br.com.poo.nethack.items;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import br.com.poo.nethack.player.Player;
 
@@ -14,7 +17,8 @@ public abstract class Item extends Sprite {
 	private String descricao;
 	private int weight;
 	
-	public Item(String n, String des, int w, char r,int l, int c) {
+	public Item(String n, String des, int w, int SpriteX, int SpriteY) {
+		super(new TextureRegion(new Texture(Gdx.files.internal("sprite.png")), SpriteX, SpriteY, 32, 32));
 		setNome(n);
 		setDescricao(des);
 		setWeight(w);

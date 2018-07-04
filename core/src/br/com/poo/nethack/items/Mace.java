@@ -8,12 +8,8 @@ import br.com.poo.nethack.util.Dices;
  *
  */
 public class Mace extends Weapon{
-	public Mace(int l, int c) {
-		super("Mace", "A Mace is a type of blunt weapon found in the Dungeon", new Dices(1, 6, 1), 0, 30, l, c);
-		// TODO Auto-generated constructor stub
-	}
-	
 	public Mace() {
-		super("Mace", "A Mace is a type of blunt weapon found in the Dungeon", new Dices(1, 6, 1), 0, 30, -1, -1);
+		super("Mace", "A Mace is a type of blunt weapon found in the Dungeon", new Dices(1, 6, 1), 0, 30, 32*10, 32*11);
+		// TODO Auto-generated constructor stub
 	}
 }

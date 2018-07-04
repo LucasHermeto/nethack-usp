@@ -7,12 +7,8 @@ package br.com.poo.nethack.items;
  *
  */
 public class RingMail extends Armor{
-	public RingMail(int l, int c) {
-		super("Ring Mail", "Light iron armor", 3, 250, l, c);
-		// TODO Auto-generated constructor stub
-	}
-
 	public RingMail() {
-		super("Ring Mail", "Light iron armor", 3, 250, -1, -1);
+		super("Ring Mail", "Light iron armor", 3, 250, 32*27, 32*12);
+		// TODO Auto-generated constructor stub
 	}
 }

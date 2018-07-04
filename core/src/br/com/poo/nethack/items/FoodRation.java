@@ -8,12 +8,8 @@ package br.com.poo.nethack.items;
  */
 public class FoodRation extends Food{
 
-	public FoodRation(int l, int c) {
-		super("Food Ration", "A complete meal for your stomach.", 1, 800, 20, l, c);
+	public FoodRation(int q) {
+		super("Food Ration", "A complete meal for your stomach.", q, 800, 20, 32*20, 32*16);
 		// TODO Auto-generated constructor stub
-	}
-
-	public FoodRation() {
-		super("Food Ration", "A complete meal for your stomach.", 1, 800, 20, -1, -1);
 	}
 }

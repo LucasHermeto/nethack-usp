@@ -4,13 +4,9 @@ import br.com.poo.nethack.player.Player;
 // Faz o inimigo dormir
 public class PotionSleeping extends Potions{
 
-	public PotionSleeping(int quant, int l, int c) {
-		super("Potion of Sleeping", "Good Night Cinderella", quant, 20, l, c);
-		// TODO Auto-generated constructor stub
-	}
-	
 	public PotionSleeping(int quant) {
-		super("Potion of Sleeping", "Good Night Cinderella", quant, 20, -1, -1);
+		super("Potion of Sleeping", "Good Night Cinderella", quant, 20, 32*27, 32*16);
+		// TODO Auto-generated constructor stub
 	}
 	
 	@Override

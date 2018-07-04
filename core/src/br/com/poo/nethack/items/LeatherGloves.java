@@ -7,12 +7,8 @@ package br.com.poo.nethack.items;
  */
 public class LeatherGloves extends Armor{
 
-	public LeatherGloves(int l, int c) {
-		super("Leather Gloves", "The most basic kind of gloves", 1, 10, l, c);
-		// TODO Auto-generated constructor stub
-	}
-
 	public LeatherGloves() {
-		super("Leather Gloves", "The most basic kind of gloves", 1, 10, -1, -1);
+		super("Leather Gloves", "The most basic kind of gloves", 1, 10, 32*12, 32*13);
+		// TODO Auto-generated constructor stub
 	}
 }

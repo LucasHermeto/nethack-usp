@@ -9,12 +9,8 @@ import br.com.poo.nethack.util.Dices;
  *
  */
 public class ShortSword extends Weapon{
-	public ShortSword(int l, int c) {
-		super("Short Sword", "A Popular weapon in the Dungeon of Doom", new Dices(1, 7, 0), 0, 30, l, c);
-		// TODO Auto-generated constructor stub
-	}
-
 	public ShortSword() {
-		super("Short Sword", "A Popular weapon in the Dungeon of Doom", new Dices(1, 7, 0), 0, 30, -1, -1);
+		super("Short Sword", "A Popular weapon in the Dungeon of Doom", new Dices(1, 7, 0), 0, 30, 32*23, 32*10);
+		// TODO Auto-generated constructor stub
 	}
 }
