@@ -1,5 +1,6 @@
 package br.com.poo.nethack.screen;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -25,7 +27,13 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.github.czyzby.noise4j.map.Grid;
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator;
 
+import br.com.poo.nethack.items.Arrow;
 import br.com.poo.nethack.items.Consumables;
+import br.com.poo.nethack.items.Gold;
+import br.com.poo.nethack.items.Item;
+import br.com.poo.nethack.items.PotionHealing;
+import br.com.poo.nethack.monster.Jackal;
+import br.com.poo.nethack.monster.Monster;
 import br.com.poo.nethack.player.Player;
 import br.com.poo.nethack.util.ScreenEnum;
 import br.com.poo.nethack.util.ScreenManager;
@@ -53,6 +61,7 @@ public class Game extends AbstractScreen implements InputProcessor{
     private SpriteBatch sb;
     private Texture texture;
     private Player player;
+
     private int playerX = 0;
     private int playerY = 0;
     private int time = 0;
@@ -67,6 +76,9 @@ public class Game extends AbstractScreen implements InputProcessor{
 	private String textDescription;
 	private String textStatus;
 	private GDXDialogs dialogs = GDXDialogsSystem.install();
+	
+	// Sprites
+	private List<Sprite> gameobjects = new ArrayList<Sprite>();
 	
     public Game(Player player, int level, List<Grid> params) {
     	this.player = player;
@@ -184,6 +196,13 @@ public class Game extends AbstractScreen implements InputProcessor{
         glyphLayout = new GlyphLayout();
         
 		player.setPosition(playerX, playerY);
+
+	    Gold gold = new Gold(135);
+	    Jackal jack = new Jackal();
+	    gameobjects.add(gold);
+	    gameobjects.add(jack);
+		gold.setPosition(playerX + 32, playerY + 32);
+		jack.setPosition(playerX + 64, playerY + 64);
         
         camera.position.x = this.playerX;
         camera.position.y = this.playerY;
@@ -203,6 +222,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         
+        
 		font.draw(sb, textDescription, player.getX() - 318f, player.getY() + 234f);
 		font.draw(sb, textStatus, player.getX() - 318f, player.getY() - 192f);
 		
@@ -217,7 +237,12 @@ public class Game extends AbstractScreen implements InputProcessor{
 			}
 		}
 		
+		for(int i = 0; i < gameobjects.size(); i++) {
+			gameobjects.get(i).draw(sb);
+			grid.get(this.level).set((int)gameobjects.get(i).getX()/32, (int)gameobjects.get(i).getY()/32, (float)i+2);
+		}
         player.draw(sb);
+        
         sb.end();
     }
     
@@ -273,86 +298,151 @@ public class Game extends AbstractScreen implements InputProcessor{
 		
 		// Movimento
         if(keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
-        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0 ||
-        			grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0.5) {
-        		playerX -= 32;
-	            camera.translate(-32,0);
-	            player.translateX(-32f);
-	            this.time++;
-        	}
+        	if(!(grid.get(this.level).get(playerX/32 - 1, playerY/32) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 - 1, playerY/32)-2) instanceof Monster))) {
+	        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0 ||
+	        			grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0.5 ||
+	        			grid.get(this.level).get(playerX/32 - 1, playerY/32) >= 2) {
+	        		if(grid.get(this.level).get(playerX/32 - 1, playerY/32) >= 2) {
+	        			((Item)gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
+	        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32) -2));
+	        			grid.get(this.level).set(playerX/32 - 1, playerY/32, 0f);
+	        		}
+	        		playerX -= 32;
+		            camera.translate(-32,0);
+		            player.translateX(-32f);
+		            this.time++;
+	        	}
+        	}else System.out.println("It's a Monster");
         }
         if(keycode == Input.Keys.RIGHT || keycode == Input.Keys.D) {
-        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32) == 0 ||
-        			grid.get(this.level).get(playerX/32 + 1, playerY/32) == 0.5) {
-        		playerX += 32;
-	            camera.translate(32,0);
-	            player.translateX(32f);
-	            this.time++;
-        	}
+        	if(!(grid.get(this.level).get(playerX/32 + 1, playerY/32) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 + 1, playerY/32)-2) instanceof Monster))) {
+	        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32) == 0 ||
+	        			grid.get(this.level).get(playerX/32 + 1, playerY/32) == 0.5 ||
+	        			grid.get(this.level).get(playerX/32 + 1, playerY/32) >= 2) {
+	        		if(grid.get(this.level).get(playerX/32 + 1, playerY/32) >= 2) {
+	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
+	        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32) -2));
+	        			grid.get(this.level).set(playerX/32 + 1, playerY/32, 0f);
+	        		}
+	        		playerX += 32;
+		            camera.translate(32,0);
+		            player.translateX(32f);
+		            this.time++;
+		          
+	        	}
+        	}else System.out.println("It's a Monster");
         }
         if(keycode == Input.Keys.UP || keycode == Input.Keys.W) {
-        	if (grid.get(this.level).get(playerX/32, playerY/32 + 1) == 0 ||
-        			grid.get(this.level).get(playerX/32, playerY/32 + 1) == 0.5) {
-        		playerY += 32;
-	            camera.translate(0,32);
-	            player.translateY(32f);
-	            this.time++;
-        	}
+        	if(!( grid.get(this.level).get(playerX/32, playerY/32 + 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32, playerY/32 + 1)-2) instanceof Monster))) {
+	        	if (grid.get(this.level).get(playerX/32, playerY/32 + 1) == 0 ||
+	        			grid.get(this.level).get(playerX/32, playerY/32 + 1) == 0.5 ||
+	        			grid.get(this.level).get(playerX/32, playerY/32 + 1) >= 2) {
+	        		if(grid.get(this.level).get(playerX/32, playerY/32 + 1) >= 2) {
+		            	((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2));
+		            	grid.get(this.level).set(playerX/32, playerY/32 + 1, 0f);
+	        		}
+	        		playerY += 32;
+		            camera.translate(0,32);
+		            player.translateY(32f);
+		            this.time++;
+	        	}
+        	}else System.out.println("It's a Monster");
         }
         if(keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
-        	if (grid.get(this.level).get(playerX/32, playerY/32 - 1) == 0 ||
-        			grid.get(this.level).get(playerX/32, playerY/32 - 1) == 0.5) {
-        		playerY -= 32;
-	            camera.translate(0,-32);
-	            player.translateY(-32f);
-	            this.time++;
-        	}
+        	if(!(grid.get(this.level).get(playerX/32, playerY/32 - 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32, playerY/32 - 1)-2) instanceof Monster))) {
+	        	if (grid.get(this.level).get(playerX/32, playerY/32 - 1) == 0 ||
+	        			grid.get(this.level).get(playerX/32, playerY/32 - 1) == 0.5 ||
+	        			grid.get(this.level).get(playerX/32, playerY/32 - 1) >= 2) {
+	        		if(grid.get(this.level).get(playerX/32, playerY/32 - 1) >= 2) {
+		            	((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2));
+		            	grid.get(this.level).set(playerX/32, playerY/32 - 1, 0f);
+		            }
+	        		playerY -= 32;
+		            camera.translate(0,-32);
+		            player.translateY(-32f);
+		            this.time++;
+	        	}
+        	}else System.out.println("It's a Monster");
         }
         if (keycode == Input.Keys.Q) {
-        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) == 0 ||
-        			grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) == 0.5) {
-        		playerX -= 32;
-        		playerY += 32;
-	            camera.translate(-32,32);
-	            player.translate(-32f, 32f);
-	            this.time++;
-        	}
+        	if(!(grid.get(this.level).get(playerX/32 - 1, playerY/32 +1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 - 1, playerY/32 +1)-2) instanceof Monster))){
+	        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) == 0 ||
+	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) == 0.5 ||
+	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) >= 2) {
+	        		if(grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) >= 2) {
+	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2));
+		            	grid.get(this.level).set(playerX/32 - 1, playerY/32 + 1, 0f);
+	        		}
+	        		playerX -= 32;
+	        		playerY += 32;
+		            camera.translate(-32,32);
+		            player.translate(-32f, 32f);
+		            this.time++;
+	        	}
+        	}else System.out.println("It's a Monster");
         }
         if (keycode == Input.Keys.E) {
-        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) == 0 ||
-        			grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) == 0.5) {
-        		playerX += 32;
-        		playerY += 32;
-	            camera.translate(32,32);
-	            player.translate(32f, 32f);
-	            this.time++;
-        	}
+        	if(!(grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1)-2) instanceof Monster))){
+	        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) == 0 ||
+	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) == 0.5 ||
+	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) >= 2) {
+	        		if(grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) >= 2) {
+	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2));
+		            	grid.get(this.level).set(playerX/32 + 1, playerY/32 + 1, 0f);
+	        		}
+	        		playerX += 32;
+	        		playerY += 32;
+		            camera.translate(32,32);
+		            player.translate(32f, 32f);
+		            this.time++;
+	        	}
+        	}else System.out.println("It's a Monster");
         }
         if (keycode == Input.Keys.Z) {
-        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) == 0 ||
-        			grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) == 0.5) {
-        		playerX -= 32;
-        		playerY -= 32;
-	            camera.translate(-32,-32);
-	            player.translate(-32f, -32f);
-	            this.time++;
-        	}
+        	if(!(grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1)-2) instanceof Monster))){
+	        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) == 0 ||
+	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) == 0.5 ||
+	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) >= 2) {
+	        		if(grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) >= 2) {
+	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2));
+		            	grid.get(this.level).set(playerX/32 - 1, playerY/32 - 1, 0f);
+	        		}
+	        		playerX -= 32;
+	        		playerY -= 32;
+		            camera.translate(-32,-32);
+		            player.translate(-32f, -32f);
+		            this.time++;
+	        	}
+        	}else System.out.println("It's a Monster");
         }
         if (keycode == Input.Keys.C) {
-        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) == 0 ||
-        			grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) == 0.5) {
-        		playerX += 32;
-        		playerY -= 32;
-	            camera.translate(32,-32);
-	            player.translate(32f, -32f);
-	            this.time++;
-        	}
+        	if(!(grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1)-2) instanceof Monster))){
+	        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) == 0 ||
+	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) == 0.5 ||
+	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) >= 2) {
+	        		if(grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) >= 2) {
+	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2));
+		            	grid.get(this.level).set(playerX/32 + 1, playerY/32 - 1, 0f);
+	        		}
+	        		playerX += 32;
+	        		playerY -= 32;
+		            camera.translate(32,-32);
+		            player.translate(32f, -32f);
+		            this.time++;
+	        	}
+        	}else System.out.println("It's a Monster");
         }
         
         // Inventario
         if (keycode == Input.Keys.I) {
         	isOpen = !isOpen;
-        	
+        
 //        	// Get item texture
 //        	if (isOpen) {
 //	        	for (Item i : player.getInventory()) {
