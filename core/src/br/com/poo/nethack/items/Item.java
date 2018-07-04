@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import br.com.poo.nethack.player.Player;
+import br.com.poo.nethack.screen.Game;
+import br.com.poo.nethack.util.ScreenEnum;
+import br.com.poo.nethack.util.ScreenManager;
 
 /**
  * class Itens: Representacao de todos os itens presentes nesse jogo

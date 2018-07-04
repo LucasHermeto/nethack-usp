@@ -32,6 +32,7 @@ import br.com.poo.nethack.items.Consumables;
 import br.com.poo.nethack.items.Gold;
 import br.com.poo.nethack.items.Item;
 import br.com.poo.nethack.items.PotionHealing;
+import br.com.poo.nethack.items.StaircaseDown;
 import br.com.poo.nethack.monster.Jackal;
 import br.com.poo.nethack.monster.Monster;
 import br.com.poo.nethack.player.Player;
@@ -83,8 +84,8 @@ public class Game extends AbstractScreen implements InputProcessor{
     public Game(Player player, int level, List<Grid> params) {
     	this.player = player;
     	
-    	this.level = level;
-    	this.grid = params;
+    	this.setLevel(level);
+    	this.setGrid(params);
     }
     
     @Override
@@ -103,7 +104,7 @@ public class Game extends AbstractScreen implements InputProcessor{
     	textStatus = player.getName() + " the "+ player.getClasse() + "    "+ "St:" +
     			player.getSt() + " Dx:" + player.getDx() + " Co:" + player.getCo() +
     			" In:" + player.getIn() + " Wi:" + player.getWi() +" Ch:" + player.getCh() + "\n" +
-    			"DLvl:" + this.level + "    " + "$:" + player.getGold() + " HP:" +
+    			"DLvl:" + this.getLevel() + "    " + "$:" + player.getGold() + " HP:" +
     			player.getLife() + "(" + player.getMax_life() + ")" + " PW:" + player.getPower() +
     			"(" + player.getMax_power() + ")" + " AC:" + player.getAC() + " Xp:"+ player.getXp() + " T:" + time;
     	
@@ -117,11 +118,11 @@ public class Game extends AbstractScreen implements InputProcessor{
         camera.update();
         
         try {
-        	if (grid.get(this.level) != null) {
+        	if (getGrid().get(this.getLevel()) != null) {
         		System.out.println("Você já esteve aqui");
         	}
         } catch (java.lang.IndexOutOfBoundsException e) {
-        	grid.add(this.level, new Grid(64, 64));
+        	getGrid().add(this.getLevel(), new Grid(64, 64));
 
         	final DungeonGenerator dungeonGenerator = new DungeonGenerator();
         	dungeonGenerator.setRoomGenerationAttempts(200);
@@ -130,53 +131,53 @@ public class Game extends AbstractScreen implements InputProcessor{
         	dungeonGenerator.setTolerance(10); // Max difference between width and height.
         	dungeonGenerator.setMinRoomSize(9);
 	        dungeonGenerator.setRandomConnectorChance(0f); // One way to solve the maze.
-	        dungeonGenerator.generate(grid.get(this.level));
+	        dungeonGenerator.generate(getGrid().get(this.getLevel()));
         }
 	        
         tiledMap = new TiledMap();
         MapLayers layers = tiledMap.getLayers();
         
         TiledMapTileLayer layer1 = new TiledMapTileLayer(128, 128, 32, 32);
-        Cell cell[][] = new Cell[grid.get(this.level).getWidth()][grid.get(this.level).getHeight()];
+        Cell cell[][] = new Cell[getGrid().get(this.getLevel()).getWidth()][getGrid().get(this.getLevel()).getHeight()];
         
         // Adiciona elementos ao mapa
         final Color color = new Color();
-        for (int x = 0; x < grid.get(this.level).getWidth(); x++) {
-            for (int y = 0; y < grid.get(this.level).getHeight(); y++) {
+        for (int x = 0; x < getGrid().get(this.getLevel()).getWidth(); x++) {
+            for (int y = 0; y < getGrid().get(this.getLevel()).getHeight(); y++) {
             	cell[x][y] = new Cell();
             	
-                final float cell1 = 1f - grid.get(this.level).get(x, y);
+                final float cell1 = 1f - getGrid().get(this.getLevel()).get(x, y);
                 color.set(cell1, cell1, cell1, 1f);
                 
                 // Verifica se eh fundo preto
-                if (grid.get(this.level).get(x, y) == 1) 
+                if (getGrid().get(this.getLevel()).get(x, y) == 1) 
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32*32, 32 * 32, 32, 32)));
                 // Verifica se eh canto superior
-                else if (grid.get(this.level).get(x, y) == 0.5 && ((grid.get(this.level).get(x, y+1) == 1 && grid.get(this.level).get(x + 1, y) == 1) || 
-                		(grid.get(this.level).get(x, y + 1) == 1 && grid.get(this.level).get(x - 1, y) == 1))) {  
-                	grid.get(this.level).set(x, y, 1.5f);
+                else if (getGrid().get(this.getLevel()).get(x, y) == 0.5 && ((getGrid().get(this.getLevel()).get(x, y+1) == 1 && getGrid().get(this.getLevel()).get(x + 1, y) == 1) || 
+                		(getGrid().get(this.getLevel()).get(x, y + 1) == 1 && getGrid().get(this.getLevel()).get(x - 1, y) == 1))) {  
+                	getGrid().get(this.getLevel()).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 32, 32 * 20, 32, 32)));
                 // Verifica se eh canto inferior
-                } else if (grid.get(this.level).get(x, y) == 0.5 && ((grid.get(this.level).get(x, y - 1) == 1 && grid.get(this.level).get(x + 1, y) == 1) || 
-                		(grid.get(this.level).get(x, y - 1) == 1 && grid.get(this.level).get(x - 1, y) == 1))) {
-                	grid.get(this.level).set(x, y, 1.5f);
+                } else if (getGrid().get(this.getLevel()).get(x, y) == 0.5 && ((getGrid().get(this.getLevel()).get(x, y - 1) == 1 && getGrid().get(this.getLevel()).get(x + 1, y) == 1) || 
+                		(getGrid().get(this.getLevel()).get(x, y - 1) == 1 && getGrid().get(this.getLevel()).get(x - 1, y) == 1))) {
+                	getGrid().get(this.getLevel()).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 34, 32 * 20, 32, 32)));
                 // Verifica se eh lado esquerdo ou direito
-                } else if (grid.get(this.level).get(x, y) == 0.5 && ((grid.get(this.level).get(x + 1, y) == 1) || (grid.get(this.level).get(x - 1, y) == 1)) &&
-                		(grid.get(this.level).get(x, y + 1) != 0 && grid.get(this.level).get(x, y - 1) != 0)) {
-                	grid.get(this.level).set(x, y, 1.5f);
+                } else if (getGrid().get(this.getLevel()).get(x, y) == 0.5 && ((getGrid().get(this.getLevel()).get(x + 1, y) == 1) || (getGrid().get(this.getLevel()).get(x - 1, y) == 1)) &&
+                		(getGrid().get(this.getLevel()).get(x, y + 1) != 0 && getGrid().get(this.getLevel()).get(x, y - 1) != 0)) {
+                	getGrid().get(this.getLevel()).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 30, 32 * 20, 32, 32)));
                 // Verifica se eh lado superior ou inferior
-                } else if (grid.get(this.level).get(x, y) == 0.5 && (grid.get(this.level).get(x, y + 1) == 1 || grid.get(this.level).get(x, y - 1) == 1) && 
-                		(grid.get(this.level).get(x, y + 1) == 0.5 || grid.get(this.level).get(x, y - 1) == 0.5) && 
-                		(grid.get(this.level).get(x + 1, y) == 0.5 || grid.get(this.level).get(x - 1, y) == 0.5)) {
-                	grid.get(this.level).set(x, y, 1.5f);
+                } else if (getGrid().get(this.getLevel()).get(x, y) == 0.5 && (getGrid().get(this.getLevel()).get(x, y + 1) == 1 || getGrid().get(this.getLevel()).get(x, y - 1) == 1) && 
+                		(getGrid().get(this.getLevel()).get(x, y + 1) == 0.5 || getGrid().get(this.getLevel()).get(x, y - 1) == 0.5) && 
+                		(getGrid().get(this.getLevel()).get(x + 1, y) == 0.5 || getGrid().get(this.getLevel()).get(x - 1, y) == 0.5)) {
+                	getGrid().get(this.getLevel()).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 31, 32 * 20, 32, 32)));
                 // Verifica se eh caminho
-                } else if (grid.get(this.level).get(x, y) == 0)
+                } else if (getGrid().get(this.getLevel()).get(x, y) == 0)
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 9, 32 * 21, 32, 32)));
                 // Verifica se eh sala
-                else if (grid.get(this.level).get(x, y) == 0.5) {
+                else if (getGrid().get(this.getLevel()).get(x, y) == 0.5) {
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 8, 32 * 21, 32, 32)));
                 	
                 	if (playerX == 0 && playerY == 0) {
@@ -199,9 +200,10 @@ public class Game extends AbstractScreen implements InputProcessor{
 
 	    Gold gold = new Gold(135);
 	    Jackal jack = new Jackal();
-	    gameobjects.add(gold);
+	    StaircaseDown down = new StaircaseDown();
+	    gameobjects.add(down);
 	    gameobjects.add(jack);
-		gold.setPosition(playerX + 32, playerY + 32);
+		down.setPosition(playerX + 32, playerY + 32);
 		jack.setPosition(playerX + 64, playerY + 64);
         
         camera.position.x = this.playerX;
@@ -239,7 +241,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 		
 		for(int i = 0; i < gameobjects.size(); i++) {
 			gameobjects.get(i).draw(sb);
-			grid.get(this.level).set((int)gameobjects.get(i).getX()/32, (int)gameobjects.get(i).getY()/32, (float)i+2);
+			getGrid().get(this.getLevel()).set((int)gameobjects.get(i).getX()/32, (int)gameobjects.get(i).getY()/32, (float)i+2);
 		}
         player.draw(sb);
         
@@ -278,7 +280,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 			GDXButtonDialog bDialog = dialogs.newDialog(GDXButtonDialog.class);
 			bDialog.setTitle("Here Lies...");
 			bDialog.setMessage("Goodbye " + player.getName() + " the " + player.getRole().getName() + "...\n"
-					+ "You died in The Dungeons of Doom on dungeon level " + (this.level + 1) + " with " + player.getScore() + " points,\n"
+					+ "You died in The Dungeons of Doom on dungeon level " + (this.getLevel() + 1) + " with " + player.getScore() + " points,\n"
 					+ "and " + player.getGold() + " pieces of gold, after " + time + " moves.\n"
 					+ "You were level " + player.getLevel() + " with a maximun of " + player.getMax_life() + " hit points when you died.\n"
 					+ "R.I.P.");
@@ -298,14 +300,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 		
 		// Movimento
         if(keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
-        	if(!(grid.get(this.level).get(playerX/32 - 1, playerY/32) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 - 1, playerY/32)-2) instanceof Monster))) {
-	        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0 ||
-	        			grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0.5 ||
-	        			grid.get(this.level).get(playerX/32 - 1, playerY/32) >= 2) {
-	        		if(grid.get(this.level).get(playerX/32 - 1, playerY/32) >= 2) {
-	        			((Item)gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
-	        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32) -2));
-	        			grid.get(this.level).set(playerX/32 - 1, playerY/32, 0f);
+        	if(!(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) >= 2 && ((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32)-2) instanceof Monster) || (gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32)-2) instanceof StaircaseDown )))) {
+	        	if (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) == 0 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) == 0.5 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) >= 2) {
+	        		if(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) >= 2) {
+		        		((Item)gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
+		        		gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2));
+		        		getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32, 0f);
 	        		}
 	        		playerX -= 32;
 		            camera.translate(-32,0);
@@ -313,22 +315,27 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            this.time++;
 	        	}
         	}else {
-        		((Monster) gameobjects.get((int)(grid.get(this.level).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
-        		if(((Monster) gameobjects.get((int)(grid.get(this.level).get(playerX/32 - 1, playerY/32) -2))).getHp() <= 0) {
-        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32) -2));
-        			grid.get(this.level).set(playerX/32 - 1, playerY/32, 0f);
+        		if((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32)-2) instanceof StaircaseDown )) {
+        			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
+        					this.player, this.getLevel() + 1, this.getGrid());
+        		}else {
+	        		((Monster) gameobjects.get((int)(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
+	        		if(((Monster) gameobjects.get((int)(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).getHp() <= 0) {
+	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2));
+	        			getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32, 0f);
+	        		}	
         		}
         	}
         }
         if(keycode == Input.Keys.RIGHT || keycode == Input.Keys.D) {
-        	if(!(grid.get(this.level).get(playerX/32 + 1, playerY/32) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 + 1, playerY/32)-2) instanceof Monster))) {
-	        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32) == 0 ||
-	        			grid.get(this.level).get(playerX/32 + 1, playerY/32) == 0.5 ||
-	        			grid.get(this.level).get(playerX/32 + 1, playerY/32) >= 2) {
-	        		if(grid.get(this.level).get(playerX/32 + 1, playerY/32) >= 2) {
-	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
-	        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32) -2));
-	        			grid.get(this.level).set(playerX/32 + 1, playerY/32, 0f);
+        	if(!(getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) >= 2 && ((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2) instanceof Monster) || (gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2) instanceof StaircaseDown)))) {
+	        	if (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) == 0 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) == 0.5 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) >= 2) {
+	        		if(getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) >= 2) {
+	        			((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
+	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) -2));
+	        			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32, 0f);
 	        		}
 	        		playerX += 32;
 		            camera.translate(32,0);
@@ -337,22 +344,27 @@ public class Game extends AbstractScreen implements InputProcessor{
 		          
 	        	}
         	}else {
-        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
-        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32)-2))).getHp() <= 0) {
-	        		gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32) -2));
-	    			grid.get(this.level).set(playerX/32 + 1, playerY/32, 0f);
+        		if((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2) instanceof StaircaseDown)) {
+        			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
+        					this.player, this.getLevel() + 1, this.getGrid());
+        		}else {
+	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
+	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2))).getHp() <= 0) {
+		        		gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) -2));
+		    			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32, 0f);
+	        		}
         		}
         	}
         }
         if(keycode == Input.Keys.UP || keycode == Input.Keys.W) {
-        	if(!( grid.get(this.level).get(playerX/32, playerY/32 + 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32, playerY/32 + 1)-2) instanceof Monster))) {
-	        	if (grid.get(this.level).get(playerX/32, playerY/32 + 1) == 0 ||
-	        			grid.get(this.level).get(playerX/32, playerY/32 + 1) == 0.5 ||
-	        			grid.get(this.level).get(playerX/32, playerY/32 + 1) >= 2) {
-	        		if(grid.get(this.level).get(playerX/32, playerY/32 + 1) >= 2) {
-		            	((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
-		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2));
-		            	grid.get(this.level).set(playerX/32, playerY/32 + 1, 0f);
+        	if(!( getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) >= 2 && ((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1)-2) instanceof Monster) || (gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1)-2) instanceof StaircaseDown)))) {
+	        	if (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) == 0 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) == 0.5 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) >= 2) {
+	        		if(getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) >= 2) {
+		            	((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 + 1, 0f);
 	        		}
 	        		playerY += 32;
 		            camera.translate(0,32);
@@ -360,22 +372,27 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            this.time++;
 	        	}
         	}else {
-        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
-        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2))).getHp() <= 0) {
-        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2));
-	            	grid.get(this.level).set(playerX/32, playerY/32 + 1, 0f);
+        		if((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1)-2) instanceof StaircaseDown)) {
+        			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
+        					this.player, this.getLevel() + 1, this.getGrid());
+        		}else {
+        			((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
+	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2))).getHp() <= 0) {
+	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 + 1, 0f);
+	        		}
         		}
         	}
         }
         if(keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
-        	if(!(grid.get(this.level).get(playerX/32, playerY/32 - 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32, playerY/32 - 1)-2) instanceof Monster))) {
-	        	if (grid.get(this.level).get(playerX/32, playerY/32 - 1) == 0 ||
-	        			grid.get(this.level).get(playerX/32, playerY/32 - 1) == 0.5 ||
-	        			grid.get(this.level).get(playerX/32, playerY/32 - 1) >= 2) {
-	        		if(grid.get(this.level).get(playerX/32, playerY/32 - 1) >= 2) {
-		            	((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
-		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2));
-		            	grid.get(this.level).set(playerX/32, playerY/32 - 1, 0f);
+        	if(!(getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) >= 2 && ((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1)-2) instanceof Monster || gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1)-2) instanceof StaircaseDown )))) {
+	        	if (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) == 0 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) == 0.5 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) >= 2) {
+	        		if(getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) >= 2) {
+		            	((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 - 1, 0f);
 		            }
 	        		playerY -= 32;
 		            camera.translate(0,-32);
@@ -383,22 +400,27 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            this.time++;
 	        	}
         	}else {
-        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
-        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2))).getHp() <= 0) {
-        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2));
-	            	grid.get(this.level).set(playerX/32, playerY/32 - 1, 0f);
+        		if(gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1)-2) instanceof StaircaseDown) {
+        			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
+        					this.player, this.getLevel() + 1, this.getGrid());
+        		}else {
+	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
+	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2))).getHp() <= 0) {
+	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 - 1, 0f);
+	        		}
         		}
         	}
         }
         if (keycode == Input.Keys.Q) {
-        	if(!(grid.get(this.level).get(playerX/32 - 1, playerY/32 +1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 - 1, playerY/32 +1)-2) instanceof Monster))){
-	        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) == 0 ||
-	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) == 0.5 ||
-	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) >= 2) {
-	        		if(grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) >= 2) {
-	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
-		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2));
-		            	grid.get(this.level).set(playerX/32 - 1, playerY/32 + 1, 0f);
+        	if(!(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 +1) >= 2 && ((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 +1)-2) instanceof Monster || gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 +1)-2) instanceof StaircaseDown)))){
+	        	if (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) == 0 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) == 0.5 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) >= 2) {
+	        		if(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) >= 2) {
+	        			((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 + 1, 0f);
 	        		}
 	        		playerX -= 32;
 	        		playerY += 32;
@@ -407,22 +429,27 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            this.time++;
 	        	}
         	}else {
-        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
-        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2))).getHp() <= 0) {
-        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2));
-	            	grid.get(this.level).set(playerX/32 - 1, playerY/32 + 1, 0f);
+        		if(gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 +1)-2) instanceof StaircaseDown) {
+        			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
+        					this.player, this.getLevel() + 1, this.getGrid());
+        		}else {
+	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
+	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2))).getHp() <= 0) {
+	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 + 1, 0f);
+	        		}
         		}
         	}
         }
         if (keycode == Input.Keys.E) {
-        	if(!(grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1)-2) instanceof Monster))){
-	        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) == 0 ||
-	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) == 0.5 ||
-	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) >= 2) {
-	        		if(grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) >= 2) {
-	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
-		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2));
-		            	grid.get(this.level).set(playerX/32 + 1, playerY/32 + 1, 0f);
+        	if(!(getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) >= 2 && ((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1)-2) instanceof Monster || gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1)-2) instanceof StaircaseDown)))){
+	        	if (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) == 0 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) == 0.5 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) >= 2) {
+	        		if(getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) >= 2) {
+	        			((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 + 1, 0f);
 	        		}
 	        		playerX += 32;
 	        		playerY += 32;
@@ -431,22 +458,27 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            this.time++;
 	        	}
         	}else {
-        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
-        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2))).getHp() <= 0){
-        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2));
-	            	grid.get(this.level).set(playerX/32 + 1, playerY/32 + 1, 0f);
+        		if(gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1)-2) instanceof StaircaseDown) {
+        			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
+        					this.player, this.getLevel() + 1, this.getGrid());
+        		}else {
+        			((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
+	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2))).getHp() <= 0){
+	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 + 1, 0f);
+	        		}
         		}
         	}
         }
         if (keycode == Input.Keys.Z) {
-        	if(!(grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1)-2) instanceof Monster))){
-	        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) == 0 ||
-	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) == 0.5 ||
-	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) >= 2) {
-	        		if(grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) >= 2) {
-	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
-		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2));
-		            	grid.get(this.level).set(playerX/32 - 1, playerY/32 - 1, 0f);
+        	if(!(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) >= 2 && ((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1)-2) instanceof Monster || gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1)-2) instanceof StaircaseDown)))){
+	        	if (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) == 0 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) == 0.5 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) >= 2) {
+	        		if(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) >= 2) {
+	        			((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 - 1, 0f);
 	        		}
 	        		playerX -= 32;
 	        		playerY -= 32;
@@ -455,22 +487,27 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            this.time++;
 	        	}
         	}else {
-        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
-        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2))).getHp() <= 0){
-        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2));
-	            	grid.get(this.level).set(playerX/32 - 1, playerY/32 - 1, 0f);
+        		if(gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1)-2) instanceof StaircaseDown) {
+        			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
+        					this.player, this.getLevel() + 1, this.getGrid());
+        		}else {
+	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
+	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2))).getHp() <= 0){
+	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 - 1, 0f);
+	        		}
         		}
         	}
         }
         if (keycode == Input.Keys.C) {
-        	if(!(grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1)-2) instanceof Monster))){
-	        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) == 0 ||
-	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) == 0.5 ||
-	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) >= 2) {
-	        		if(grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) >= 2) {
-	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
-		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2));
-		            	grid.get(this.level).set(playerX/32 + 1, playerY/32 - 1, 0f);
+        	if(!(getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) >= 2 && ((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1)-2) instanceof Monster || gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1)-2) instanceof StaircaseDown)))){
+	        	if (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) == 0 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) == 0.5 ||
+	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) >= 2) {
+	        		if(getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) >= 2) {
+	        			((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
+		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0f);
 	        		}
 	        		playerX += 32;
 	        		playerY -= 32;
@@ -479,10 +516,15 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            this.time++;
 	        	}
         	}else {
-        		((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
-        		if(((Monster) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2))).getHp() <= 0) {
-        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2));
-	            	grid.get(this.level).set(playerX/32 + 1, playerY/32 - 1, 0f);
+        		if(gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1)-2) instanceof StaircaseDown) {
+        			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
+        					this.player, this.getLevel() + 1, this.getGrid());
+        		}else{
+	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
+	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).getHp() <= 0) {
+	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2));
+		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0f);
+	        		}
         		}
         	}
         }
@@ -506,7 +548,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         
         if(keycode == Input.Keys.NUM_2) 
         	ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
-					this.player, this.level + 1, this.grid);
+					this.player, this.getLevel() + 1, this.getGrid());
         
         if(keycode == Input.Keys.NUM_3) 
         	player.setLife(player.getLife() - 1);
@@ -517,7 +559,7 @@ public class Game extends AbstractScreen implements InputProcessor{
     	textStatus = player.getName() + " the "+ player.getClasse() + "    "+ "St:" +
     			player.getSt() + " Dx:" + player.getDx() + " Co:" + player.getCo() +
     			" In:" + player.getIn() + " Wi:" + player.getWi() +" Ch:" + player.getCh() + " " + player.getState_cap()+ "\n" +
-    			"DLvl:" + this.level + "    " + "$:" + player.getGold() + " HP:" +
+    			"DLvl:" + this.getLevel() + "    " + "$:" + player.getGold() + " HP:" +
     			player.getLife() + "(" + player.getMax_life() + ")" + " PW:" + player.getPower() +
     			"(" + player.getMax_power() + ")" + " AC:" + player.getAC() + " Xp:"+ player.getXp() + " T:" + this.time + " " + player.getNu_state();
         
@@ -552,5 +594,21 @@ public class Game extends AbstractScreen implements InputProcessor{
 	@Override
 	public boolean scrolled(int amount) {
 		return false;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public List<Grid> getGrid() {
+		return grid;
+	}
+
+	public void setGrid(List<Grid> grid) {
+		this.grid = grid;
 	}
 }
