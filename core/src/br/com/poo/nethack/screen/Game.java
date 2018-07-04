@@ -27,14 +27,21 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.github.czyzby.noise4j.map.Grid;
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator;
 
-import br.com.poo.nethack.items.Arrow;
 import br.com.poo.nethack.items.Consumables;
 import br.com.poo.nethack.items.Gold;
 import br.com.poo.nethack.items.Item;
-import br.com.poo.nethack.items.PotionHealing;
+import br.com.poo.nethack.monster.Dingo;
+import br.com.poo.nethack.monster.FloatingEye;
+import br.com.poo.nethack.monster.Gremlin;
 import br.com.poo.nethack.monster.Jackal;
+import br.com.poo.nethack.monster.Kobold;
+import br.com.poo.nethack.monster.KoboldLord;
 import br.com.poo.nethack.monster.Monster;
+import br.com.poo.nethack.monster.RabidRat;
+import br.com.poo.nethack.monster.SewerRat;
+import br.com.poo.nethack.monster.Warg;
 import br.com.poo.nethack.player.Player;
+import br.com.poo.nethack.util.Dices;
 import br.com.poo.nethack.util.ScreenEnum;
 import br.com.poo.nethack.util.ScreenManager;
 import de.tomgrill.gdxdialogs.core.GDXDialogs;
@@ -152,22 +159,26 @@ public class Game extends AbstractScreen implements InputProcessor{
                 if (grid.get(this.level).get(x, y) == 1) 
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32*32, 32 * 32, 32, 32)));
                 // Verifica se eh canto superior
-                else if (grid.get(this.level).get(x, y) == 0.5 && ((grid.get(this.level).get(x, y+1) == 1 && grid.get(this.level).get(x + 1, y) == 1) || 
+                else if (grid.get(this.level).get(x, y) == 0.5 &&
+                		((grid.get(this.level).get(x, y+1) == 1 && grid.get(this.level).get(x + 1, y) == 1) || 
                 		(grid.get(this.level).get(x, y + 1) == 1 && grid.get(this.level).get(x - 1, y) == 1))) {  
                 	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 32, 32 * 20, 32, 32)));
                 // Verifica se eh canto inferior
-                } else if (grid.get(this.level).get(x, y) == 0.5 && ((grid.get(this.level).get(x, y - 1) == 1 && grid.get(this.level).get(x + 1, y) == 1) || 
+                } else if (grid.get(this.level).get(x, y) == 0.5 &&
+                		((grid.get(this.level).get(x, y - 1) == 1 && grid.get(this.level).get(x + 1, y) == 1) || 
                 		(grid.get(this.level).get(x, y - 1) == 1 && grid.get(this.level).get(x - 1, y) == 1))) {
                 	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 34, 32 * 20, 32, 32)));
                 // Verifica se eh lado esquerdo ou direito
-                } else if (grid.get(this.level).get(x, y) == 0.5 && ((grid.get(this.level).get(x + 1, y) == 1) || (grid.get(this.level).get(x - 1, y) == 1)) &&
+                } else if (grid.get(this.level).get(x, y) == 0.5 &&
+                		((grid.get(this.level).get(x + 1, y) == 1) || (grid.get(this.level).get(x - 1, y) == 1)) &&
                 		(grid.get(this.level).get(x, y + 1) != 0 && grid.get(this.level).get(x, y - 1) != 0)) {
                 	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 30, 32 * 20, 32, 32)));
                 // Verifica se eh lado superior ou inferior
-                } else if (grid.get(this.level).get(x, y) == 0.5 && (grid.get(this.level).get(x, y + 1) == 1 || grid.get(this.level).get(x, y - 1) == 1) && 
+                } else if (grid.get(this.level).get(x, y) == 0.5 &&
+                		(grid.get(this.level).get(x, y + 1) == 1 || grid.get(this.level).get(x, y - 1) == 1) && 
                 		(grid.get(this.level).get(x, y + 1) == 0.5 || grid.get(this.level).get(x, y - 1) == 0.5) && 
                 		(grid.get(this.level).get(x + 1, y) == 0.5 || grid.get(this.level).get(x - 1, y) == 0.5)) {
                 	grid.get(this.level).set(x, y, 1.5f);
@@ -208,6 +219,36 @@ public class Game extends AbstractScreen implements InputProcessor{
         camera.position.y = this.playerY;
         
         Gdx.input.setInputProcessor(this);
+    }
+    
+    public void generateObjects() {
+    	Dices d = new Dices(1, 9, 0);
+    	int face = d.Roll();
+    	
+    	Monster m;
+    	if (face == 0)
+    		m = new Dingo();
+    	else if (face == 1)
+    		m = new FloatingEye();
+    	else if (face == 2)
+    		m = new Gremlin();
+    	else if (face == 3)
+    		m = new Jackal();
+    	else if (face == 4) 
+    		m = new Kobold();
+    	else if (face == 5)
+    		m = new KoboldLord();
+    	else if (face == 6)
+    		m = new RabidRat();
+    	else if (face == 7)
+    		m = new SewerRat();
+    	else if (face == 8)
+    		m = new Warg();
+    	
+    	// Escolhe direcao
+    	for (int i = 0; i < 9; i++) {
+    		
+    	}
     }
     
     @Override
@@ -296,17 +337,22 @@ public class Game extends AbstractScreen implements InputProcessor{
 			bDialog.build().show();
 		}
 		
+		textDescription = "\"Siga em frente, olhe para o lado...\"";
+		
 		// Movimento
         if(keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
         	if(!(grid.get(this.level).get(playerX/32 - 1, playerY/32) >= 2 && (gameobjects.get((int) grid.get(this.level).get(playerX/32 - 1, playerY/32)-2) instanceof Monster))) {
 	        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0 ||
 	        			grid.get(this.level).get(playerX/32 - 1, playerY/32) == 0.5 ||
 	        			grid.get(this.level).get(playerX/32 - 1, playerY/32) >= 2) {
+	        		
+	        		// Verifica item
 	        		if(grid.get(this.level).get(playerX/32 - 1, playerY/32) >= 2) {
-	        			((Item)gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
+	        			textDescription = ((Item)gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
 	        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32) -2));
 	        			grid.get(this.level).set(playerX/32 - 1, playerY/32, 0f);
 	        		}
+	        		
 	        		playerX -= 32;
 		            camera.translate(-32,0);
 		            player.translateX(-32f);
@@ -319,11 +365,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32) == 0 ||
 	        			grid.get(this.level).get(playerX/32 + 1, playerY/32) == 0.5 ||
 	        			grid.get(this.level).get(playerX/32 + 1, playerY/32) >= 2) {
+
+	        		// Verifica item
 	        		if(grid.get(this.level).get(playerX/32 + 1, playerY/32) >= 2) {
-	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
 	        			gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32) -2));
 	        			grid.get(this.level).set(playerX/32 + 1, playerY/32, 0f);
 	        		}
+	        		
 	        		playerX += 32;
 		            camera.translate(32,0);
 		            player.translateX(32f);
@@ -337,11 +386,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        	if (grid.get(this.level).get(playerX/32, playerY/32 + 1) == 0 ||
 	        			grid.get(this.level).get(playerX/32, playerY/32 + 1) == 0.5 ||
 	        			grid.get(this.level).get(playerX/32, playerY/32 + 1) >= 2) {
+
+	        		// Verifica item
 	        		if(grid.get(this.level).get(playerX/32, playerY/32 + 1) >= 2) {
-		            	((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32, playerY/32 + 1) -2));
 		            	grid.get(this.level).set(playerX/32, playerY/32 + 1, 0f);
 	        		}
+	        		
 	        		playerY += 32;
 		            camera.translate(0,32);
 		            player.translateY(32f);
@@ -354,11 +406,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        	if (grid.get(this.level).get(playerX/32, playerY/32 - 1) == 0 ||
 	        			grid.get(this.level).get(playerX/32, playerY/32 - 1) == 0.5 ||
 	        			grid.get(this.level).get(playerX/32, playerY/32 - 1) >= 2) {
+	        		
+	        		// Verifica item
 	        		if(grid.get(this.level).get(playerX/32, playerY/32 - 1) >= 2) {
-		            	((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32, playerY/32 - 1) -2));
 		            	grid.get(this.level).set(playerX/32, playerY/32 - 1, 0f);
 		            }
+	        		
 	        		playerY -= 32;
 		            camera.translate(0,-32);
 		            player.translateY(-32f);
@@ -371,11 +426,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) == 0 ||
 	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) == 0.5 ||
 	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) >= 2) {
+	        		
+	        		// Verifica item
 	        		if(grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) >= 2) {
-	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 + 1) -2));
 		            	grid.get(this.level).set(playerX/32 - 1, playerY/32 + 1, 0f);
 	        		}
+	        		
 	        		playerX -= 32;
 	        		playerY += 32;
 		            camera.translate(-32,32);
@@ -389,11 +447,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) == 0 ||
 	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) == 0.5 ||
 	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) >= 2) {
+	        		
+	        		// Verifica item
 	        		if(grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) >= 2) {
-	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 + 1) -2));
 		            	grid.get(this.level).set(playerX/32 + 1, playerY/32 + 1, 0f);
 	        		}
+	        		
 	        		playerX += 32;
 	        		playerY += 32;
 		            camera.translate(32,32);
@@ -407,11 +468,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        	if (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) == 0 ||
 	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) == 0.5 ||
 	        			grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) >= 2) {
+	        		
+	        		// Verifica item
 	        		if(grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) >= 2) {
-	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 - 1, playerY/32 - 1) -2));
 		            	grid.get(this.level).set(playerX/32 - 1, playerY/32 - 1, 0f);
 	        		}
+	        		
 	        		playerX -= 32;
 	        		playerY -= 32;
 		            camera.translate(-32,-32);
@@ -425,11 +489,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        	if (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) == 0 ||
 	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) == 0.5 ||
 	        			grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) >= 2) {
+	        		
+	        		// Verifica item
 	        		if(grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) >= 2) {
-	        			((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (grid.get(this.level).get(playerX/32 + 1, playerY/32 - 1) -2));
 		            	grid.get(this.level).set(playerX/32 + 1, playerY/32 - 1, 0f);
 	        		}
+	        		
 	        		playerX += 32;
 	        		playerY -= 32;
 		            camera.translate(32,-32);
@@ -463,7 +530,6 @@ public class Game extends AbstractScreen implements InputProcessor{
         if(keycode == Input.Keys.NUM_3) 
         	player.setLife(player.getLife() - 1);
         
-    	textDescription = "\"Siga em frente, olhe para o lado...\"";
     	this.player.Alive();
     	
     	textStatus = player.getName() + " the "+ player.getClasse() + "    "+ "St:" +
