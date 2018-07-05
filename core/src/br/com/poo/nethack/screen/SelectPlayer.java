@@ -20,6 +20,11 @@ import br.com.poo.nethack.player.Player;
 import br.com.poo.nethack.util.ScreenEnum;
 import br.com.poo.nethack.util.ScreenManager;
 
+/** Tela da Selecao do Player
+ * 
+ * @author hermeto
+ *
+ */
 public class SelectPlayer extends AbstractScreen{
 	private Skin skin;
 	private Stage stage;
@@ -43,11 +48,6 @@ public class SelectPlayer extends AbstractScreen{
 		classes.getList().setAlignment(Align.right);
 		classes.getStyle().listStyle.selection.setRightWidth(10);
 		classes.getStyle().listStyle.selection.setLeftWidth(20);
-//		classes.addListener(new ChangeListener() {
-//			public void changed (ChangeEvent event, Actor actor) {
-//				System.out.println(classes.getSelected());
-//			}
-//		});
 		classes.setItems("Barbarian", "Priest", "Knight", "Rogue", "Healer", "Ranger", "Wizard");
 		classes.setSelected("Barbarian");
 		
@@ -58,26 +58,16 @@ public class SelectPlayer extends AbstractScreen{
 		race.getList().setAlignment(Align.right);
 		race.getStyle().listStyle.selection.setRightWidth(10);
 		race.getStyle().listStyle.selection.setLeftWidth(20);
-//		race.addListener(new ChangeListener() {
-//			public void changed (ChangeEvent event, Actor actor) {
-//				System.out.println(race.getSelected());
-//			}
-//		});
 		race.setItems("Human", "Elf", "Ork", "Dwarf", "Gnome");
 		race.setSelected("Human");
 		
 		// Genero
-		final Label genderLabel = new Label("Select your race: ", skin);
+		final Label genderLabel = new Label("Select your gender: ", skin);
 		final SelectBox<String> gender = new SelectBox<String>(skin);
 		gender.setAlignment(Align.right);
 		gender.getList().setAlignment(Align.right);
 		gender.getStyle().listStyle.selection.setRightWidth(10);
 		gender.getStyle().listStyle.selection.setLeftWidth(20);
-//		race.addListener(new ChangeListener() {
-//			public void changed (ChangeEvent event, Actor actor) {
-//				System.out.println(race.getSelected());
-//			}
-//		});
 		gender.setItems("Male", "Female", "Agender");
 		gender.setSelected("Agender");
 		

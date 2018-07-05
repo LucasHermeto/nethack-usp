@@ -28,7 +28,6 @@ import com.github.czyzby.noise4j.map.Grid;
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator;
 
 import br.com.poo.nethack.items.Apple;
-import br.com.poo.nethack.items.Arrow;
 import br.com.poo.nethack.items.Axe;
 import br.com.poo.nethack.items.BattleAxe;
 import br.com.poo.nethack.items.Bow;
@@ -53,7 +52,6 @@ import br.com.poo.nethack.items.Scalpel;
 import br.com.poo.nethack.items.ShortSword;
 import br.com.poo.nethack.items.StaircaseDown;
 import br.com.poo.nethack.items.WarHammer;
-import br.com.poo.nethack.items.StaircaseDown;
 import br.com.poo.nethack.monster.Dingo;
 import br.com.poo.nethack.monster.FloatingEye;
 import br.com.poo.nethack.monster.Gremlin;
@@ -277,31 +275,24 @@ public class Game extends AbstractScreen implements InputProcessor{
         Gdx.input.setInputProcessor(this);
     }
     
+    /** Gera aleatoriamente o enemigo e a posicao dele
+     * 
+     */
     public void generateObjects() {
     	Dices d = new Dices(1, 9, -1);
     	int face = d.Roll();
     	
     	Monster m = null;
-    	if (face == 0)
-    		m = new Dingo();
-    	else if (face == 1)
-    		m = new FloatingEye();
-    	else if (face == 2)
-    		m = new Gremlin();
-    	else if (face == 3)
-    		m = new Jackal();
-    	else if (face == 4) 
-    		m = new Kobold();
-    	else if (face == 5)
-    		m = new KoboldLord();
-    	else if (face == 6)
-    		m = new RabidRat();
-    	else if (face == 7)
-    		m = new SewerRat();
-    	else if (face == 8)
-    		m = new Warg();
-    	else 
-    		m = new Dingo();
+    	if (face == 0) m = new Dingo();
+    	else if (face == 1) m = new FloatingEye();
+    	else if (face == 2) m = new Gremlin();
+    	else if (face == 3) m = new Jackal();
+    	else if (face == 4) m = new Kobold();
+    	else if (face == 5) m = new KoboldLord();
+    	else if (face == 6) m = new RabidRat();
+    	else if (face == 7) m = new SewerRat();
+    	else if (face == 8) m = new Warg();
+    	else  m = new Dingo();
     	
     	// Escolhe direcao
     	d = new Dices(1, 8, 1);
@@ -309,8 +300,6 @@ public class Game extends AbstractScreen implements InputProcessor{
     	for (int i = 0; i < 8; i++) {
     		int x = ((int)player.getX() + dir[i][0] * d.Roll()) , 
     			y = ((int)player.getY() + dir[i][1] * d.Roll());
-    		System.out.printf("(%d, %d)\n", x, y);
-    		System.out.printf("(%d, %d)\n", (int)player.getX(), (int)player.getY());
     		float grid_aux = grid.get(this.level).get(x/32, y/32); 
     		if (grid_aux == 0f || grid_aux == 0.5f) {
     			m.setPosition(x, y);

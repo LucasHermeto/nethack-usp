@@ -11,6 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import br.com.poo.nethack.util.ScreenEnum;
 import br.com.poo.nethack.util.ScreenManager;
 
+/** Tela do Menu Principal
+ * 
+ * @author hermeto
+ *
+ */
 public class MainMenuScreen extends AbstractScreen {
 	private Texture logo;
     private Skin skin;

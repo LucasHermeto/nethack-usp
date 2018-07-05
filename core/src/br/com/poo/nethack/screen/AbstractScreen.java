@@ -7,6 +7,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+/** Classe para abstrair conteudo das telas
+ * 
+ * author lhermeto
+ *
+ */
 public abstract class AbstractScreen extends Stage implements Screen {
 	
 	protected AbstractScreen() {

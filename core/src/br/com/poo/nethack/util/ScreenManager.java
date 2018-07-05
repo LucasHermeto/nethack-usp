@@ -6,6 +6,11 @@ import br.com.poo.nethack.screen.AbstractScreen;
 
 import com.badlogic.gdx.Game;
 
+/** Classe auxiliar na mudanca de telas
+ * 
+ * @author lhermeto
+ *
+ */
 public class ScreenManager {
 
     // Singleton: unique instance

@@ -10,6 +10,11 @@ import br.com.poo.nethack.screen.Game;
 import br.com.poo.nethack.screen.MainMenuScreen;
 import br.com.poo.nethack.screen.SelectPlayer;
 
+/** ENUM para escolher as telas
+ * 
+ * @author hermeto
+ *
+ */
 public enum ScreenEnum {
 
     MAIN_MENU {
