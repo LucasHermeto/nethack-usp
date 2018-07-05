@@ -422,6 +422,11 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        		((Monster) gameobjects.get((int)(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int)(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2));
+	        			
+	        			Sprite item = GenerateItem();
+		            	item.setPosition(playerX -32, playerY);
+		            	gameobjects.add(item);
+		            	getGrid().get(this.getLevel()).set((int)item.getX()/32, (int)item.getY()/32, gameobjects.indexOf(item)+2);
 	    
 	        		}	
         		}
@@ -453,6 +458,11 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2))).getHp() <= 0) {
 		        		gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) -2));
 		    			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32, 0f);
+		    			
+		    			Sprite item = GenerateItem();
+		            	item.setPosition(playerX +32, playerY);
+		            	gameobjects.add(item);
+		            	getGrid().get(this.getLevel()).set((int)item.getX()/32, (int)item.getY()/32, gameobjects.indexOf(item)+2);
 	        		}
         		}
         	}
@@ -482,6 +492,11 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 + 1, 0f);
+		            	
+		            	Sprite item = GenerateItem();
+		            	item.setPosition(playerX, playerY +32);
+		            	gameobjects.add(item);
+		            	getGrid().get(this.getLevel()).set((int)item.getX()/32, (int)item.getY()/32, gameobjects.indexOf(item)+2);
 	        		}
         		}
         	}
@@ -511,6 +526,11 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 - 1, 0f);
+		            	
+		            	Sprite item = GenerateItem();
+		            	item.setPosition(playerX, playerY -32);
+		            	gameobjects.add(item);
+		            	getGrid().get(this.getLevel()).set((int)item.getX()/32, (int)item.getY()/32, gameobjects.indexOf(item)+2);
 	        		}
         		}
         	}
@@ -541,6 +561,11 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 + 1, 0f);
+		            	
+		            	Sprite item = GenerateItem();
+		            	item.setPosition(playerX -32, playerY +32);
+		            	gameobjects.add(item);
+		            	getGrid().get(this.getLevel()).set((int)item.getX()/32, (int)item.getY()/32, gameobjects.indexOf(item)+2);
 	        		}
         		}
         	}
@@ -571,6 +596,11 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2))).getHp() <= 0){
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 + 1, 0f);
+		            	
+		            	Sprite item = GenerateItem();
+		            	item.setPosition(playerX +32, playerY +32);
+		            	gameobjects.add(item);
+		            	getGrid().get(this.getLevel()).set((int)item.getX()/32, (int)item.getY()/32, gameobjects.indexOf(item)+2);
 	        		}
         		}
         	}
@@ -599,8 +629,12 @@ public class Game extends AbstractScreen implements InputProcessor{
         		}else {
 	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2))).getHp() <= 0){
+	        			Sprite item = GenerateItem();	
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 - 1, 0f);
+		            	item.setPosition(playerX -32, playerY -32);
+		            	gameobjects.add(item);
+		            	getGrid().get(this.getLevel()).set((int)item.getX()/32, (int)item.getY()/32, gameobjects.indexOf(item)+2);
 	        		}
         		}
         	}
@@ -629,11 +663,12 @@ public class Game extends AbstractScreen implements InputProcessor{
         		}else{
 	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).getHp() <= 0) {
+	        			Sprite item = GenerateItem();	
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2));
 	        			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0f);
-	        			
-	        			//GenerateItem(playerX + 32, playerY+32);	 
-	        			
+	        			item.setPosition(playerX + 32, playerY - 32);
+	        			gameobjects.add(item);
+	        			getGrid().get(this.getLevel()).set((int)item.getX()/32, (int)item.getY()/32, gameobjects.indexOf(item)+2);
 	        		}
         		}
         	}
@@ -675,30 +710,29 @@ public class Game extends AbstractScreen implements InputProcessor{
         return false;
 	}
 
-	public void GenerateItem(int x, int y) {
+	public Sprite GenerateItem() {
 		int aux = new Dices(1,6,0).Roll();
 		Sprite item;
 		
-		//if(aux == 1 || aux == 2) {
+		
+		
+		if(aux == 1 || aux == 2) {
 			item = new Gold(new Dices(1,1000,0).Roll());
-	/*	}else if(aux == 3) {
-			int which_food = new Dices(1,foods.size(),0).Roll();
+		}else if(aux == 3) {
+			int which_food = new Dices(1,2,0).Roll();
 			item = foods.get(which_food-1);
 		}else if(aux == 4) {
-			int which_weapon = new Dices(1,weapons.size(),0).Roll();
+			int which_weapon = new Dices(1,10,0).Roll();
 			item = weapons.get(which_weapon-1);
 		}else if(aux == 5) {
-			int which_armor = new Dices(1,armors.size(),0).Roll();
+			int which_armor = new Dices(1,5,0).Roll();
 			item = armors.get(which_armor-1);
 		}else {
-			int which_potion = new Dices(1,potions.size(),0).Roll();
+			int which_potion = new Dices(1,4,0).Roll();
 			item = potions.get(which_potion-1);
 		}
-		*/
-		item.setPosition(x, y);
-		gameobjects.add(item);
-		getGrid().get(this.getLevel()).set(x, y, gameobjects.indexOf(item)+2);
 		
+		return item;
 	}
 	
 	@Override
