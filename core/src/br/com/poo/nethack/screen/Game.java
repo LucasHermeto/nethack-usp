@@ -97,7 +97,8 @@ public class Game extends AbstractScreen implements InputProcessor{
     
     // Inventario
     private boolean isOpen = false;
-//    private List<Sprite> items = new ArrayList<Sprite>();
+//    private Skin skin;
+//    private Window window;
     
     // Textos
     private GlyphLayout glyphLayout;
@@ -165,6 +166,8 @@ public class Game extends AbstractScreen implements InputProcessor{
     			"DLvl:" + this.getLevel() + "    " + "$:" + player.getGold() + " HP:" +
     			player.getLife() + "(" + player.getMax_life() + ")" + " PW:" + player.getPower() +
     			"(" + player.getMax_power() + ")" + " AC:" + player.getAC() + " Xp:"+ player.getXp() + " T:" + time;
+    	
+//    	skin = new Skin(Gdx.files.internal("uiskin.json"));
     	
         // Mapa
     	texture = new Texture(Gdx.files.internal("sprite.png"));
@@ -273,6 +276,54 @@ public class Game extends AbstractScreen implements InputProcessor{
         camera.position.x = this.playerX;
         camera.position.y = this.playerY;
         
+        // Inventario
+		// Usar
+//		final Label itemsLabel = new Label("Use: ", skin);
+//		final SelectBox<String> useItems = new SelectBox<String>(skin);
+//		useItems.setAlignment(Align.right);
+//		useItems.getList().setAlignment(Align.right);
+//		useItems.getStyle().listStyle.selection.setRightWidth(10);
+//		useItems.getStyle().listStyle.selection.setLeftWidth(20);
+//		
+//		// Gera Itens
+//		String[] items = new String[player.getInventory().size()];
+//		for (int i = 0; i < player.getInventory().size(); i++) {
+//			String textItem = player.getInventory().get(i).getNome();
+//			if(player.getInventory().get(i) instanceof Consumables) 
+//				textItem += "  " + "x" + ((Consumables)player.getInventory().get(i)).getQuant();
+//			items[i] = textItem;
+//		}
+//		
+//		useItems.setItems(items);
+//		useItems.setSelected("Barbarian");
+//		
+//		TextButton close = new TextButton("X", skin);
+//		
+//		window = new Window("Inventory", skin);
+//		window.getTitleTable().add(close).height(window.getPadTop());
+//		window.add(itemsLabel).colspan(2);
+//		window.add(useItems).maxWidth(100);
+//		window.row();
+//		window.pack();
+//		
+//		window.setVisible(false);
+//		window.setPosition(playerX + 200f, playerY + 200f);
+//		
+//		for (Action action : window.getActions())
+//			addAction(action);
+//		addActor(window);
+//		
+//		close.addListener(
+//        		new ClickListener() {
+//					@Override
+//					public void clicked(InputEvent event, float x, float y) {
+//						System.out.println("Close Window");
+//						window.setVisible(false);
+//					}
+//        		}
+//		);
+        
+        
         Gdx.input.setInputProcessor(this);
     }
     
@@ -335,7 +386,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         
         
 		font.draw(sb, textDescription, player.getX() - 318f, player.getY() + 234f);
-		font.draw(sb, textStatus, player.getX() - 318f, player.getY() - 192f);
+		font.draw(sb, textStatus, player.getX() - 318f, player.getY() - 202f);
 		
 		if (isOpen) {
 			font.draw(sb, "Inventory:", player.getX() + 200f, player.getY() + 200f);
@@ -353,6 +404,9 @@ public class Game extends AbstractScreen implements InputProcessor{
 			getGrid().get(this.getLevel()).set((int)gameobjects.get(i).getX()/32, (int)gameobjects.get(i).getY()/32, (float)i+2);
 		}
         player.draw(sb);
+        
+//        window.setPosition(playerX + 200f, playerY + 200f);
+//        window.draw(sb, 2f);
         
         sb.end();
     }
@@ -697,14 +751,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         // Inventario
         if (keycode == Input.Keys.I) {
         	isOpen = !isOpen;
-        
-//        	// Get item texture
-//        	if (isOpen) {
-//	        	for (Item i : player.getInventory()) {
-//	        		if (i.getNome() == "Apple" && !items.contains(i))
-//	        			items.add(new Sprite(new TextureRegion(texture, 32 * 4, 32 * 16, 32, 32)));
-//	        	}
-//        	}
+//        	window.setVisible(isOpen);
         }
         
         // Extra
