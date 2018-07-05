@@ -757,20 +757,23 @@ public class Game extends AbstractScreen implements InputProcessor{
 	public Sprite GenerateItem() {
 		int aux = new Dices(1,6,0).Roll();
 		Sprite item;
-		
 		if(aux == 1 || aux == 2) {
 			item = new Gold(new Dices(1,1000,0).Roll());
 		}else if(aux == 3) {
 			int which_food = new Dices(1,2,0).Roll();
+			System.out.println("Fodd: " + which_food);
 			item = foods.get(which_food-1);
 		}else if(aux == 4) {
 			int which_weapon = new Dices(1,10,0).Roll();
+			System.out.println("Weapon: " + which_weapon);
 			item = weapons.get(which_weapon-1);
 		}else if(aux == 5) {
 			int which_armor = new Dices(1,5,0).Roll();
+			System.out.println("Armor: " + which_armor);
 			item = armors.get(which_armor-1);
 		}else {
 			int which_potion = new Dices(1,4,0).Roll();
+			System.out.println("Potion: " + which_potion);
 			item = potions.get(which_potion-1);
 		}
 		
