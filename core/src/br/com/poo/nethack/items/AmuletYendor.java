@@ -18,7 +18,7 @@ public class AmuletYendor extends Armor{
 	}
 
 	@Override
-	public void onInteract(Player player) {
+	public String onInteract(Player player) {
 		GDXButtonDialog bDialog = dialogs.newDialog(GDXButtonDialog.class);
 		bDialog.setTitle("Congratulations!");
 		bDialog.setMessage("Goodbye " + player.getName() + " the " + player.getRole().getName() + "...\n"
@@ -38,5 +38,6 @@ public class AmuletYendor extends Armor{
 		bDialog.addButton("Ok");
 
 		bDialog.build().show();
+		return null;
 	}
 }

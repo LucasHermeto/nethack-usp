@@ -642,6 +642,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2));
 	        			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0f);
+	        			
 	        			//GenerateItem(playerX + 32, playerY+32);	 
 	        			
 	        		}
