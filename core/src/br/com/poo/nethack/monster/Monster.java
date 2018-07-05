@@ -75,9 +75,10 @@ public abstract class Monster extends Sprite{
 		this.hp = hp;
 	}
 	
-	public void onInteract(Player p) {
+	public String onInteract(Player p) {
+		String returnString = "";
 		if(p.getState_cap().equals(new String("Strained")) || p.getState_cap().equals("Overloaded"))
-			System.out.println("You are carrying so many things that You can't move a muscle"); // Testa
+			returnString += "You are carrying so many things that You can't move a muscle"; // Testa
 		else {
 			p.setExe_Str(p.getExe_Str()+1);
 			int to_hit = new Dices(1,20,0).Roll();
@@ -110,10 +111,10 @@ public abstract class Monster extends Sprite{
 				hp -= total_damage;
 				p.setReg_count(0);
 				p.setPw_count(0);
-				System.out.println("You hitted " + getName() + "!");
+				returnString += "You hitted " + getName() + "!\n";
 				
 				if(hp <= 0) {
-					System.out.println(getName() + " was killed!");
+					returnString += getName() + " was killed!";
 					p.setXp(p.getXp() + xp);
 					//
 					// REMOVE DO JOGOO
@@ -122,18 +123,20 @@ public abstract class Monster extends Sprite{
 					p.setScore(p.getScore() + xp*4);
 				}
 			}else
-				System.out.println("You missed the attack!");
+				returnString += "You missed the attack!\n";
 		}
 		if(hp > 0) {
 			int to_hit = new Dices(1,20,0).Roll();
 			int target_number = 10 + p.getAC() + level;
 			if(to_hit < target_number) {
-				System.out.println(name + " hitted you!");
+				returnString += name + " hitted you!";
 				p.setLife(p.getLife() - damage.Roll());
 			}else {
-				System.out.println(name + " missed the attack!");
+				returnString += name + " missed the attack!";
 			}
 		}
+		
+		return returnString;
 	}
 	public String getName() {
 		return name;
