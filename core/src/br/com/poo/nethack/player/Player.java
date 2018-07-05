@@ -146,53 +146,6 @@ public class Player extends Sprite {
 		}else if (gender == 3) {
 			setGender("Agender");
 		}
-		
-//		// Funcao para o player usar o inventario
-//		comandos.put("5", g -> {
-//			int j = 0;
-//			int index = 0, ud = 0;
-//			// Imprime itens equipados e que estao no inventario
-//			System.out.println("\t---- Inventory ----");
-//			System.out.println("Equiped:");
-//			System.out.println("\t- " + getWield_w().getNome());
-//			System.out.println("\t- " + getWield_a().getNome());
-//			for(Item i : Inventory) {
-//				j++;
-//				System.out.print( j + " - " + i.getNome());
-//				if(i instanceof Consumables) System.out.print("\t" + "x" + ((Consumables)i).getQuant());
-//				System.out.println("");
-//			}
-//			System.out.println("\t---- End of Inventory ----");
-//			// Se o inventario nao estiver vazio eu posso usars, dropar ou me informar sobre os iten
-//			if(!Inventory.isEmpty()) {
-//				System.out.println("Do you wanna use an item or drop? (other for none, 1 for use, 2 for drop and 3 for info)");
-//				try {
-//					ud = EntradaTeclado.leInt();
-//				} catch (IOException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//				if(ud == 1 || ud == 2 || ud == 3) {
-//					System.out.println("Choose the item:");
-//					try {
-//						index = EntradaTeclado.leInt();
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					if(index > 0 && index <= j) {
-//						if(ud == 1) {
-//							Inventory.get(index-1).use(this, index);
-//						}else if(ud == 2){
-//							System.out.println("You dropped " + Inventory.get(index-1).getNome() + "!");
-//							dropInventory(index-1);
-//						}else {
-//							System.out.println(Inventory.get(index-1).getNome() + ": " + Inventory.get(index-1).getDescricao());
-//						}
-//					}
-//				}
-//			}
-//		});
 	}
 	
 	public int getLife() {

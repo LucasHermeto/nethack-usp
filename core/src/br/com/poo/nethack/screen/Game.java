@@ -53,8 +53,17 @@ import br.com.poo.nethack.items.Scalpel;
 import br.com.poo.nethack.items.ShortSword;
 import br.com.poo.nethack.items.StaircaseDown;
 import br.com.poo.nethack.items.WarHammer;
+import br.com.poo.nethack.items.StaircaseDown;
+import br.com.poo.nethack.monster.Dingo;
+import br.com.poo.nethack.monster.FloatingEye;
+import br.com.poo.nethack.monster.Gremlin;
 import br.com.poo.nethack.monster.Jackal;
+import br.com.poo.nethack.monster.Kobold;
+import br.com.poo.nethack.monster.KoboldLord;
 import br.com.poo.nethack.monster.Monster;
+import br.com.poo.nethack.monster.RabidRat;
+import br.com.poo.nethack.monster.SewerRat;
+import br.com.poo.nethack.monster.Warg;
 import br.com.poo.nethack.player.Player;
 import br.com.poo.nethack.util.Dices;
 import br.com.poo.nethack.util.ScreenEnum;
@@ -204,25 +213,29 @@ public class Game extends AbstractScreen implements InputProcessor{
                 if (getGrid().get(this.getLevel()).get(x, y) == 1) 
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32*32, 32 * 32, 32, 32)));
                 // Verifica se eh canto superior
-                else if (getGrid().get(this.getLevel()).get(x, y) == 0.5 && ((getGrid().get(this.getLevel()).get(x, y+1) == 1 && getGrid().get(this.getLevel()).get(x + 1, y) == 1) || 
-                		(getGrid().get(this.getLevel()).get(x, y + 1) == 1 && getGrid().get(this.getLevel()).get(x - 1, y) == 1))) {  
-                	getGrid().get(this.getLevel()).set(x, y, 1.5f);
+                else if (grid.get(this.level).get(x, y) == 0.5 &&
+                		((grid.get(this.level).get(x, y+1) == 1 && grid.get(this.level).get(x + 1, y) == 1) || 
+                		(grid.get(this.level).get(x, y + 1) == 1 && grid.get(this.level).get(x - 1, y) == 1))) {  
+                	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 32, 32 * 20, 32, 32)));
                 // Verifica se eh canto inferior
-                } else if (getGrid().get(this.getLevel()).get(x, y) == 0.5 && ((getGrid().get(this.getLevel()).get(x, y - 1) == 1 && getGrid().get(this.getLevel()).get(x + 1, y) == 1) || 
-                		(getGrid().get(this.getLevel()).get(x, y - 1) == 1 && getGrid().get(this.getLevel()).get(x - 1, y) == 1))) {
-                	getGrid().get(this.getLevel()).set(x, y, 1.5f);
+                } else if (grid.get(this.level).get(x, y) == 0.5 &&
+                		((grid.get(this.level).get(x, y - 1) == 1 && grid.get(this.level).get(x + 1, y) == 1) || 
+                		(grid.get(this.level).get(x, y - 1) == 1 && grid.get(this.level).get(x - 1, y) == 1))) {
+                	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 34, 32 * 20, 32, 32)));
                 // Verifica se eh lado esquerdo ou direito
-                } else if (getGrid().get(this.getLevel()).get(x, y) == 0.5 && ((getGrid().get(this.getLevel()).get(x + 1, y) == 1) || (getGrid().get(this.getLevel()).get(x - 1, y) == 1)) &&
-                		(getGrid().get(this.getLevel()).get(x, y + 1) != 0 && getGrid().get(this.getLevel()).get(x, y - 1) != 0)) {
-                	getGrid().get(this.getLevel()).set(x, y, 1.5f);
+                } else if (grid.get(this.level).get(x, y) == 0.5 &&
+                		((grid.get(this.level).get(x + 1, y) == 1) || (grid.get(this.level).get(x - 1, y) == 1)) &&
+                		(grid.get(this.level).get(x, y + 1) != 0 && grid.get(this.level).get(x, y - 1) != 0)) {
+                	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 30, 32 * 20, 32, 32)));
                 // Verifica se eh lado superior ou inferior
-                } else if (getGrid().get(this.getLevel()).get(x, y) == 0.5 && (getGrid().get(this.getLevel()).get(x, y + 1) == 1 || getGrid().get(this.getLevel()).get(x, y - 1) == 1) && 
-                		(getGrid().get(this.getLevel()).get(x, y + 1) == 0.5 || getGrid().get(this.getLevel()).get(x, y - 1) == 0.5) && 
-                		(getGrid().get(this.getLevel()).get(x + 1, y) == 0.5 || getGrid().get(this.getLevel()).get(x - 1, y) == 0.5)) {
-                	getGrid().get(this.getLevel()).set(x, y, 1.5f);
+                } else if (grid.get(this.level).get(x, y) == 0.5 &&
+                		(grid.get(this.level).get(x, y + 1) == 1 || grid.get(this.level).get(x, y - 1) == 1) && 
+                		(grid.get(this.level).get(x, y + 1) == 0.5 || grid.get(this.level).get(x, y - 1) == 0.5) && 
+                		(grid.get(this.level).get(x + 1, y) == 0.5 || grid.get(this.level).get(x - 1, y) == 0.5)) {
+                	grid.get(this.level).set(x, y, 1.5f);
                 	cell[x][y].setTile(new StaticTiledMapTile(new TextureRegion(texture, 32 * 31, 32 * 20, 32, 32)));
                 // Verifica se eh caminho
                 } else if (getGrid().get(this.getLevel()).get(x, y) == 0)
@@ -250,17 +263,61 @@ public class Game extends AbstractScreen implements InputProcessor{
 		player.setPosition(playerX, playerY);
 
 	    Gold gold = new Gold(135);
-	    Jackal jack = new Jackal();
+	    gameobjects.add(gold);
+		gold.setPosition(playerX + 32, playerY + 32);
+		
+		generateObjects();
 	    StaircaseDown down = new StaircaseDown();
 	    gameobjects.add(down);
-	    gameobjects.add(jack);
 		down.setPosition(playerX + 32, playerY + 32);
-		jack.setPosition(playerX + 64, playerY + 64);
         
         camera.position.x = this.playerX;
         camera.position.y = this.playerY;
         
         Gdx.input.setInputProcessor(this);
+    }
+    
+    public void generateObjects() {
+    	Dices d = new Dices(1, 9, -1);
+    	int face = d.Roll();
+    	
+    	Monster m = null;
+    	if (face == 0)
+    		m = new Dingo();
+    	else if (face == 1)
+    		m = new FloatingEye();
+    	else if (face == 2)
+    		m = new Gremlin();
+    	else if (face == 3)
+    		m = new Jackal();
+    	else if (face == 4) 
+    		m = new Kobold();
+    	else if (face == 5)
+    		m = new KoboldLord();
+    	else if (face == 6)
+    		m = new RabidRat();
+    	else if (face == 7)
+    		m = new SewerRat();
+    	else if (face == 8)
+    		m = new Warg();
+    	else 
+    		m = new Dingo();
+    	
+    	// Escolhe direcao
+    	d = new Dices(1, 8, 1);
+    	int dir[][] = {{0, 32}, {32, 32}, {32, 0}, {32, -32}, {0, -32}, {-32, -32}, {-32, 0}, {-32, 32}};
+    	for (int i = 0; i < 8; i++) {
+    		int x = ((int)player.getX() + dir[i][0] * d.Roll()) , 
+    			y = ((int)player.getY() + dir[i][1] * d.Roll());
+    		System.out.printf("(%d, %d)\n", x, y);
+    		System.out.printf("(%d, %d)\n", (int)player.getX(), (int)player.getY());
+    		float grid_aux = grid.get(this.level).get(x/32, y/32); 
+    		if (grid_aux == 0f || grid_aux == 0.5f) {
+    			m.setPosition(x, y);
+    			gameobjects.add(m);
+    			break;
+    		}
+    	}
     }
     
     @Override
@@ -349,6 +406,8 @@ public class Game extends AbstractScreen implements InputProcessor{
 			bDialog.build().show();
 		}
 		
+		textDescription = "\"Siga em frente, olhe para o lado...\"";
+		
 		// Movimento
         if(keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
         	if(!(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) >= 2 && ((gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32)-2) instanceof Monster) || (gameobjects.get((int) getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32)-2) instanceof StaircaseDown )))) {
@@ -360,6 +419,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 		        		gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2));
 		        		getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32, 0f);
 	        		}
+	        		
 	        		playerX -= 32;
 		            camera.translate(-32,0);
 		            player.translateX(-32f);
@@ -388,6 +448,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) -2));
 	        			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32, 0f);
 	        		}
+	        		
 	        		playerX += 32;
 		            camera.translate(32,0);
 		            player.translateX(32f);
@@ -417,6 +478,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 + 1, 0f);
 	        		}
+	        		
 	        		playerY += 32;
 		            camera.translate(0,32);
 		            player.translateY(32f);
@@ -445,6 +507,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 - 1, 0f);
 		            }
+	        		
 	        		playerY -= 32;
 		            camera.translate(0,-32);
 		            player.translateY(-32f);
@@ -473,6 +536,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 + 1, 0f);
 	        		}
+	        		
 	        		playerX -= 32;
 	        		playerY += 32;
 		            camera.translate(-32,32);
@@ -502,6 +566,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 + 1, 0f);
 	        		}
+	        		
 	        		playerX += 32;
 	        		playerY += 32;
 		            camera.translate(32,32);
@@ -531,6 +596,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 - 1, 0f);
 	        		}
+	        		
 	        		playerX -= 32;
 	        		playerY -= 32;
 		            camera.translate(-32,-32);
@@ -560,6 +626,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2));
 		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0f);
 	        		}
+	        		
 	        		playerX += 32;
 	        		playerY -= 32;
 		            camera.translate(32,-32);
@@ -606,7 +673,6 @@ public class Game extends AbstractScreen implements InputProcessor{
         if(keycode == Input.Keys.NUM_3) 
         	player.setLife(player.getLife() - 1);
         
-    	textDescription = "\"Siga em frente, olhe para o lado...\"";
     	this.player.Alive();
     	
     	textStatus = player.getName() + " the "+ player.getClasse() + "    "+ "St:" +

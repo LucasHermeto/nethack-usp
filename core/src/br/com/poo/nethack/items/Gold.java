@@ -16,8 +16,8 @@ public class Gold extends Consumables{
 	/**
 	 * Quando o player pega Gold, aumenta a quantidade de gold guardada pelo player
 	 */
-	public void onInteract(Player p) {
-		System.out.println("You gained " + this.getQuant() + " golds!");
+	public String onInteract(Player p) {
 		p.setGold(p.getGold() + this.getQuant());
+		return "You gained " + this.getQuant() + " golds!";
 	}
 }

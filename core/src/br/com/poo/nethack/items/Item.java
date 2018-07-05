@@ -31,9 +31,9 @@ public abstract class Item extends Sprite {
 	 * Quando o player anda para a mesma posicao que um item
 	 * ele armazena no inventario, porem tem excessoes
 	 */
-	public void onInteract(Player p) {
+	public String onInteract(Player p) {
 		p.addInventory(this);
-		System.out.println("You pick a " + this.getNome() + "!");
+		return "You pick a " + this.getNome() + "!";
 	}
 
 	public String getNome() {
