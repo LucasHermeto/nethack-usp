@@ -209,11 +209,10 @@ public class Game extends AbstractScreen implements InputProcessor{
 		player.setPosition(playerX, playerY);
 
 	    Gold gold = new Gold(135);
-	    Jackal jack = new Jackal();
 	    gameobjects.add(gold);
-	    gameobjects.add(jack);
 		gold.setPosition(playerX + 32, playerY + 32);
-		jack.setPosition(playerX + 64, playerY + 64);
+		
+		generateObjects();
         
         camera.position.x = this.playerX;
         camera.position.y = this.playerY;
@@ -222,10 +221,10 @@ public class Game extends AbstractScreen implements InputProcessor{
     }
     
     public void generateObjects() {
-    	Dices d = new Dices(1, 9, 0);
+    	Dices d = new Dices(1, 9, -1);
     	int face = d.Roll();
     	
-    	Monster m;
+    	Monster m = null;
     	if (face == 0)
     		m = new Dingo();
     	else if (face == 1)
@@ -244,10 +243,23 @@ public class Game extends AbstractScreen implements InputProcessor{
     		m = new SewerRat();
     	else if (face == 8)
     		m = new Warg();
+    	else 
+    		m = new Dingo();
     	
     	// Escolhe direcao
-    	for (int i = 0; i < 9; i++) {
-    		
+    	d = new Dices(1, 8, 1);
+    	int dir[][] = {{0, 32}, {32, 32}, {32, 0}, {32, -32}, {0, -32}, {-32, -32}, {-32, 0}, {-32, 32}};
+    	for (int i = 0; i < 8; i++) {
+    		int x = ((int)player.getX() + dir[i][0] * d.Roll()) , 
+    			y = ((int)player.getY() + dir[i][1] * d.Roll());
+    		System.out.printf("(%d, %d)\n", x, y);
+    		System.out.printf("(%d, %d)\n", (int)player.getX(), (int)player.getY());
+    		float grid_aux = grid.get(this.level).get(x/32, y/32); 
+    		if (grid_aux == 0f || grid_aux == 0.5f) {
+    			m.setPosition(x, y);
+    			gameobjects.add(m);
+    			break;
+    		}
     	}
     }
     
