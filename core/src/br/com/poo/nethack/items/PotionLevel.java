@@ -4,7 +4,7 @@ import br.com.poo.nethack.player.Player;
 
 public class PotionLevel extends Potions{
 
-	public PotionLevel(int l, int c) {
+	public PotionLevel() {
 		super("Potion of gain level", "Powerful Potion", 1, 20, 32*28, 32*16);
 		// TODO Auto-generated constructor stub
 	}

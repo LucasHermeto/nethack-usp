@@ -27,15 +27,36 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.github.czyzby.noise4j.map.Grid;
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator;
 
+import br.com.poo.nethack.items.Apple;
 import br.com.poo.nethack.items.Arrow;
+import br.com.poo.nethack.items.Axe;
+import br.com.poo.nethack.items.BattleAxe;
+import br.com.poo.nethack.items.Bow;
+import br.com.poo.nethack.items.CloakDisplacement;
+import br.com.poo.nethack.items.CloakMagicResistance;
 import br.com.poo.nethack.items.Consumables;
+import br.com.poo.nethack.items.Dagger;
+import br.com.poo.nethack.items.FoodRation;
 import br.com.poo.nethack.items.Gold;
 import br.com.poo.nethack.items.Item;
+import br.com.poo.nethack.items.LeatherArmor;
+import br.com.poo.nethack.items.LongSword;
+import br.com.poo.nethack.items.Mace;
+import br.com.poo.nethack.items.PotionAbility;
+import br.com.poo.nethack.items.PotionExtraHealing;
 import br.com.poo.nethack.items.PotionHealing;
+import br.com.poo.nethack.items.PotionLevel;
+import br.com.poo.nethack.items.Quarterstaff;
+import br.com.poo.nethack.items.RingMail;
+import br.com.poo.nethack.items.Robe;
+import br.com.poo.nethack.items.Scalpel;
+import br.com.poo.nethack.items.ShortSword;
 import br.com.poo.nethack.items.StaircaseDown;
+import br.com.poo.nethack.items.WarHammer;
 import br.com.poo.nethack.monster.Jackal;
 import br.com.poo.nethack.monster.Monster;
 import br.com.poo.nethack.player.Player;
+import br.com.poo.nethack.util.Dices;
 import br.com.poo.nethack.util.ScreenEnum;
 import br.com.poo.nethack.util.ScreenManager;
 import de.tomgrill.gdxdialogs.core.GDXDialogs;
@@ -80,12 +101,42 @@ public class Game extends AbstractScreen implements InputProcessor{
 	
 	// Sprites
 	private List<Sprite> gameobjects = new ArrayList<Sprite>();
+	private List<Sprite> foods = new ArrayList<Sprite>();
+	private List<Sprite> weapons = new ArrayList<Sprite>();
+	private List<Sprite> armors = new ArrayList<Sprite>();
+	private List<Sprite> potions = new ArrayList<Sprite>();
+	
 	
     public Game(Player player, int level, List<Grid> params) {
     	this.player = player;
     	
     	this.setLevel(level);
     	this.setGrid(params);
+    	
+    	foods.add(new Apple(5));
+    	foods.add(new FoodRation(1));
+    	
+    	weapons.add(new Axe());
+    	weapons.add(new BattleAxe());
+    	weapons.add(new Bow());
+    	weapons.add(new Dagger());
+    	weapons.add(new LongSword());
+    	weapons.add(new Mace());
+    	weapons.add(new Quarterstaff());
+    	weapons.add(new Scalpel());
+    	weapons.add(new ShortSword());
+    	weapons.add(new WarHammer());
+    	
+    	armors.add(new CloakDisplacement());
+    	armors.add(new CloakMagicResistance());
+    	armors.add(new LeatherArmor());
+    	armors.add(new RingMail());
+    	armors.add(new Robe());
+    	
+    	potions.add(new PotionAbility());
+    	potions.add(new PotionExtraHealing(1));
+    	potions.add(new PotionHealing(1));
+    	potions.add(new PotionLevel());
     }
     
     @Override
@@ -322,7 +373,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        		((Monster) gameobjects.get((int)(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int)(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2));
-	        			getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32, 0f);
+	    
 	        		}	
         		}
         	}
@@ -523,7 +574,9 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0f);
+	        			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0f);
+	        			//GenerateItem(playerX + 32, playerY+32);	 
+	        			
 	        		}
         		}
         	}
@@ -566,6 +619,32 @@ public class Game extends AbstractScreen implements InputProcessor{
         return false;
 	}
 
+	public void GenerateItem(int x, int y) {
+		int aux = new Dices(1,6,0).Roll();
+		Sprite item;
+		
+		//if(aux == 1 || aux == 2) {
+			item = new Gold(new Dices(1,1000,0).Roll());
+	/*	}else if(aux == 3) {
+			int which_food = new Dices(1,foods.size(),0).Roll();
+			item = foods.get(which_food-1);
+		}else if(aux == 4) {
+			int which_weapon = new Dices(1,weapons.size(),0).Roll();
+			item = weapons.get(which_weapon-1);
+		}else if(aux == 5) {
+			int which_armor = new Dices(1,armors.size(),0).Roll();
+			item = armors.get(which_armor-1);
+		}else {
+			int which_potion = new Dices(1,potions.size(),0).Roll();
+			item = potions.get(which_potion-1);
+		}
+		*/
+		item.setPosition(x, y);
+		gameobjects.add(item);
+		getGrid().get(this.getLevel()).set(x, y, gameobjects.indexOf(item)+2);
+		
+	}
+	
 	@Override
 	public boolean keyTyped(char character) {
 		return false;
