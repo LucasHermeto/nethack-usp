@@ -1,6 +1,7 @@
 package br.com.poo.nethack.util;
 import java.util.Calendar;
 
+
 /** Classe que gera numeros aleatorios com semente padrao, gerada pela data ou adicionada pelo usuario
  * 
  * @author hermeto

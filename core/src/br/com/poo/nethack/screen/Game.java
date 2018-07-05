@@ -714,8 +714,6 @@ public class Game extends AbstractScreen implements InputProcessor{
 		int aux = new Dices(1,6,0).Roll();
 		Sprite item;
 		
-		
-		
 		if(aux == 1 || aux == 2) {
 			item = new Gold(new Dices(1,1000,0).Roll());
 		}else if(aux == 3) {
