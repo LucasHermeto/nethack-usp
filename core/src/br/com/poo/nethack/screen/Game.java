@@ -191,7 +191,10 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        dungeonGenerator.setRandomConnectorChance(0f); // One way to solve the maze.
 	        dungeonGenerator.generate(getGrid().get(this.getLevel()));
         }
-	        
+	    
+	    StaircaseDown down = new StaircaseDown();
+	    gameobjects.add(down);
+        
         tiledMap = new TiledMap();
         MapLayers layers = tiledMap.getLayers();
         
@@ -246,6 +249,7 @@ public class Game extends AbstractScreen implements InputProcessor{
                 		playerX = x * 32;
                 		playerY = y * 32;
                 	}
+            		down.setPosition(x * 32, y * 32);
                 }
                 
                 layer1.setCell(x, y, cell[x][y]);
@@ -265,9 +269,6 @@ public class Game extends AbstractScreen implements InputProcessor{
 		gold.setPosition(playerX + 32, playerY + 32);
 		
 		generateObjects();
-	    StaircaseDown down = new StaircaseDown();
-	    gameobjects.add(down);
-		down.setPosition(playerX + 32, playerY + 32);
         
         camera.position.x = this.playerX;
         camera.position.y = this.playerY;
@@ -280,6 +281,15 @@ public class Game extends AbstractScreen implements InputProcessor{
      */
     public void generateObjects() {
     	Dices d = new Dices(1, 9, -1);
+    	
+    	if (this.level >= 3) {
+    		for (int i = 0; i < d.Roll(); i++)
+    			generateMonster(d);
+    	} else 
+    		generateMonster(d);
+    }
+    
+    public void generateMonster(Dices d) {
     	int face = d.Roll();
     	
     	Monster m = null;
@@ -295,16 +305,18 @@ public class Game extends AbstractScreen implements InputProcessor{
     	else  m = new Dingo();
     	
     	// Escolhe direcao
-    	d = new Dices(1, 8, 1);
+    	d = new Dices(1, 4, -1);
     	int dir[][] = {{0, 32}, {32, 32}, {32, 0}, {32, -32}, {0, -32}, {-32, -32}, {-32, 0}, {-32, 32}};
     	for (int i = 0; i < 8; i++) {
     		int x = ((int)player.getX() + dir[i][0] * d.Roll()) , 
     			y = ((int)player.getY() + dir[i][1] * d.Roll());
-    		float grid_aux = grid.get(this.level).get(x/32, y/32); 
-    		if (grid_aux == 0f || grid_aux == 0.5f) {
-    			m.setPosition(x, y);
-    			gameobjects.add(m);
-    			break;
+    		if (x > 0 && y > 0) {
+	    		float grid_aux = grid.get(this.level).get(x/32, y/32); 
+	    		if (grid_aux == 0f || grid_aux == 0.5f) {
+	    			m.setPosition(x, y);
+	    			gameobjects.add(m);
+	    			break;
+	    		}
     		}
     	}
     }
@@ -370,31 +382,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 	}
 
 	@Override
-	public boolean keyUp(int keycode) {
-		if (player.getLife() <= 0) {
-			player.setScore(player.getScore() + player.getGold());
-			
-			GDXButtonDialog bDialog = dialogs.newDialog(GDXButtonDialog.class);
-			bDialog.setTitle("Here Lies...");
-			bDialog.setMessage("Goodbye " + player.getName() + " the " + player.getRole().getName() + "...\n"
-					+ "You died in The Dungeons of Doom on dungeon level " + (this.getLevel() + 1) + " with " + player.getScore() + " points,\n"
-					+ "and " + player.getGold() + " pieces of gold, after " + time + " moves.\n"
-					+ "You were level " + player.getLevel() + " with a maximun of " + player.getMax_life() + " hit points when you died.\n"
-					+ "R.I.P.");
-
-			bDialog.setClickListener(new ButtonClickListener() {
-
-				@Override
-				public void click(int button) {
-					Gdx.app.exit();
-				}
-			});
-
-			bDialog.addButton("Ok");
-
-			bDialog.build().show();
-		}
-		
+	public boolean keyUp(int keycode) {		
 		textDescription = "\"Siga em frente, olhe para o lado...\"";
 		
 		// Movimento
@@ -404,10 +392,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) == 0.5 ||
 	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) >= 2) {
 	        		if(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) >= 2) {
-		        		((Item)gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
+		        		textDescription = ((Item)gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
 		        		gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2));
-		        		getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32, 0f);
+		        		getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32, 0.5f);
 	        		}
+	        		
+	        		if (getGrid().get(this.getLevel()).get(playerX/32, playerY/32) == 0f &&
+	        			getGrid().get(this.getLevel()).get((playerX-32)/32, playerY/32) == 0.5f)
+	        			generateObjects();
 	        		
 	        		playerX -= 32;
 		            camera.translate(-32,0);
@@ -419,7 +411,7 @@ public class Game extends AbstractScreen implements InputProcessor{
         			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
         					this.player, this.getLevel() + 1, this.getGrid());
         		}else {
-	        		((Monster) gameobjects.get((int)(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
+        			textDescription = ((Monster) gameobjects.get((int)(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int)(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32) -2));
 	        			
@@ -438,10 +430,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) == 0.5 ||
 	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) >= 2) {
 	        		if(getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) >= 2) {
-	        			((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) -2));
-	        			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32, 0f);
+	        			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32, 0.5f);
 	        		}
+	        		
+	        		if (getGrid().get(this.getLevel()).get(playerX/32, playerY/32) == 0f &&
+		        			getGrid().get(this.getLevel()).get((playerX+32)/32, playerY/32) == 0.5f)
+		        			generateObjects();
 	        		
 	        		playerX += 32;
 		            camera.translate(32,0);
@@ -454,10 +450,10 @@ public class Game extends AbstractScreen implements InputProcessor{
         			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
         					this.player, this.getLevel() + 1, this.getGrid());
         		}else {
-	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
+        			textDescription = ((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32)-2))).getHp() <= 0) {
 		        		gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32) -2));
-		    			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32, 0f);
+		    			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32, 0.5f);
 		    			
 		    			Sprite item = GenerateItem();
 		            	item.setPosition(playerX +32, playerY);
@@ -473,10 +469,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        			getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) == 0.5 ||
 	        			getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) >= 2) {
 	        		if(getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) >= 2) {
-		            	((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 + 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 + 1, 0.5f);
 	        		}
+	        		
+	        		if (getGrid().get(this.getLevel()).get(playerX/32, playerY/32) == 0f &&
+		        			getGrid().get(this.getLevel()).get(playerX/32, (playerY+32)/32) == 0.5f)
+		        			generateObjects();
 	        		
 	        		playerY += 32;
 		            camera.translate(0,32);
@@ -488,10 +488,10 @@ public class Game extends AbstractScreen implements InputProcessor{
         			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
         					this.player, this.getLevel() + 1, this.getGrid());
         		}else {
-        			((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
+        			textDescription = ((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 + 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 + 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 + 1, 0.5f);
 		            	
 		            	Sprite item = GenerateItem();
 		            	item.setPosition(playerX, playerY +32);
@@ -507,10 +507,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        			getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) == 0.5 ||
 	        			getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) >= 2) {
 	        		if(getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) >= 2) {
-		            	((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 - 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 - 1, 0.5f);
 		            }
+	        		
+	        		if (getGrid().get(this.getLevel()).get(playerX/32, playerY/32) == 0f &&
+		        			getGrid().get(this.getLevel()).get(playerX/32, (playerY-32)/32) == 0.5f)
+		        			generateObjects();
 	        		
 	        		playerY -= 32;
 		            camera.translate(0,-32);
@@ -522,10 +526,10 @@ public class Game extends AbstractScreen implements InputProcessor{
         			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
         					this.player, this.getLevel() + 1, this.getGrid());
         		}else {
-	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
+        			textDescription = ((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32, playerY/32 - 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 - 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32, playerY/32 - 1, 0.5f);
 		            	
 		            	Sprite item = GenerateItem();
 		            	item.setPosition(playerX, playerY -32);
@@ -541,10 +545,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) == 0.5 ||
 	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) >= 2) {
 	        		if(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) >= 2) {
-	        			((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 + 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 + 1, 0.5f);
 	        		}
+	        		
+	        		if (getGrid().get(this.getLevel()).get(playerX/32, playerY/32) == 0f &&
+		        			getGrid().get(this.getLevel()).get((playerX-32)/32, (playerY+32)/32) == 0.5f)
+		        			generateObjects();
 	        		
 	        		playerX -= 32;
 	        		playerY += 32;
@@ -557,10 +565,10 @@ public class Game extends AbstractScreen implements InputProcessor{
         			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
         					this.player, this.getLevel() + 1, this.getGrid());
         		}else {
-	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
+        			textDescription = ((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2))).getHp() <= 0) {
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 + 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 + 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 + 1, 0.5f);
 		            	
 		            	Sprite item = GenerateItem();
 		            	item.setPosition(playerX -32, playerY +32);
@@ -576,10 +584,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) == 0.5 ||
 	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) >= 2) {
 	        		if(getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) >= 2) {
-	        			((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 + 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 + 1, 0.5f);
 	        		}
+	        		
+	        		if (getGrid().get(this.getLevel()).get(playerX/32, playerY/32) == 0f &&
+		        			getGrid().get(this.getLevel()).get((playerX+32)/32, (playerY+32)/32) == 0.5f)
+		        			generateObjects();
 	        		
 	        		playerX += 32;
 	        		playerY += 32;
@@ -592,10 +604,10 @@ public class Game extends AbstractScreen implements InputProcessor{
         			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
         					this.player, this.getLevel() + 1, this.getGrid());
         		}else {
-        			((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
+        			textDescription = ((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2))).getHp() <= 0){
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 + 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 + 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 + 1, 0.5f);
 		            	
 		            	Sprite item = GenerateItem();
 		            	item.setPosition(playerX +32, playerY +32);
@@ -611,10 +623,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) == 0.5 ||
 	        			getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) >= 2) {
 	        		if(getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) >= 2) {
-	        			((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 - 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 - 1, 0.5f);
 	        		}
+	        		
+	        		if (getGrid().get(this.getLevel()).get(playerX/32, playerY/32) == 0f &&
+		        			getGrid().get(this.getLevel()).get((playerX-32)/32, (playerY-32)/32) == 0.5f)
+		        			generateObjects();
 	        		
 	        		playerX -= 32;
 	        		playerY -= 32;
@@ -627,11 +643,11 @@ public class Game extends AbstractScreen implements InputProcessor{
         			ScreenManager.getInstance().showScreen(ScreenEnum.GAME,
         					this.player, this.getLevel() + 1, this.getGrid());
         		}else {
-	        		((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
+        			textDescription = ((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2))).onInteract(player);
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2))).getHp() <= 0){
 	        			Sprite item = GenerateItem();	
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 - 1, playerY/32 - 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 - 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32 - 1, playerY/32 - 1, 0.5f);
 		            	item.setPosition(playerX -32, playerY -32);
 		            	gameobjects.add(item);
 		            	getGrid().get(this.getLevel()).set((int)item.getX()/32, (int)item.getY()/32, gameobjects.indexOf(item)+2);
@@ -645,10 +661,14 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) == 0.5 ||
 	        			getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) >= 2) {
 	        		if(getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) >= 2) {
-	        			((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
+	        			textDescription = ((Item) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).onInteract(player);
 		            	gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2));
-		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0f);
+		            	getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0.5f);
 	        		}
+	        		
+	        		if (getGrid().get(this.getLevel()).get(playerX/32, playerY/32) == 0f &&
+		        			getGrid().get(this.getLevel()).get((playerX+32)/32, (playerY-32)/32) == 0.5f)
+		        			generateObjects();
 	        		
 	        		playerX += 32;
 	        		playerY -= 32;
@@ -665,7 +685,7 @@ public class Game extends AbstractScreen implements InputProcessor{
 	        		if(((Monster) gameobjects.get((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2))).getHp() <= 0) {
 	        			Sprite item = GenerateItem();	
 	        			gameobjects.remove((int) (getGrid().get(this.getLevel()).get(playerX/32 + 1, playerY/32 - 1) -2));
-	        			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0f);
+	        			getGrid().get(this.getLevel()).set(playerX/32 + 1, playerY/32 - 1, 0.5f);
 	        			item.setPosition(playerX + 32, playerY - 32);
 	        			gameobjects.add(item);
 	        			getGrid().get(this.getLevel()).set((int)item.getX()/32, (int)item.getY()/32, gameobjects.indexOf(item)+2);
@@ -707,14 +727,36 @@ public class Game extends AbstractScreen implements InputProcessor{
     			player.getLife() + "(" + player.getMax_life() + ")" + " PW:" + player.getPower() +
     			"(" + player.getMax_power() + ")" + " AC:" + player.getAC() + " Xp:"+ player.getXp() + " T:" + this.time + " " + player.getNu_state();
         
+		if (player.getLife() <= 0) {
+			player.setScore(player.getScore() + player.getGold());
+			
+			GDXButtonDialog bDialog = dialogs.newDialog(GDXButtonDialog.class);
+			bDialog.setTitle("Here Lies...");
+			bDialog.setMessage("Goodbye " + player.getName() + " the " + player.getRole().getName() + "...\n"
+					+ "You died in The Dungeons of Doom on dungeon level " + (this.getLevel() + 1) + " with " + player.getScore() + " points,\n"
+					+ "and " + player.getGold() + " pieces of gold, after " + time + " moves.\n"
+					+ "You were level " + player.getLevel() + " with a maximun of " + player.getMax_life() + " hit points when you died.\n"
+					+ "R.I.P.");
+
+			bDialog.setClickListener(new ButtonClickListener() {
+
+				@Override
+				public void click(int button) {
+					Gdx.app.exit();
+				}
+			});
+
+			bDialog.addButton("Ok");
+
+			bDialog.build().show();
+		}
+    	
         return false;
 	}
 
 	public Sprite GenerateItem() {
 		int aux = new Dices(1,6,0).Roll();
 		Sprite item;
-		
-		
 		
 		if(aux == 1 || aux == 2) {
 			item = new Gold(new Dices(1,1000,0).Roll());
